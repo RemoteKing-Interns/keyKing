@@ -1,0 +1,66 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    @apply font-nunito bg-secondary-900 text-white;
+}
+
+/* Custom button styles */
+.btn-primary {
+  @apply bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors duration-200;
+}
+
+/* Brand card styles */
+.brand-card {
+  @apply bg-secondary-900/10 backdrop-blur-sm rounded-xl p-6 transition-all duration-300 hover:scale-105 border border-secondary-800;
+}
+
+.brand-card:hover {
+  @apply bg-secondary-900/20;
+}
+
+/* Logo styles */
+.logo-container {
+  @apply w-full h-24 flex items-center justify-center;
+}
+
+.logo-image {
+  @apply w-full h-full object-contain;
+}
+
+/* RemoteKing logo styles */
+.remoteking-logo {
+  @apply w-48 h-48 object-contain;
+}
+
+/* Loading spinner styles */
+.loading-spinner {
+  @apply border-4 border-white border-t-transparent rounded-full;
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+/* Header styles */
+.header-link {
+  @apply text-secondary-400 hover:text-white transition-colors duration-200;
+}
+
+/* Footer styles */
+.footer-link {
+  @apply text-secondary-400 hover:text-white transition-colors duration-200;
+}
+
+/* Card hover effect */
+.card-hover {
+  @apply transition-all duration-300 hover:scale-105;
+}
