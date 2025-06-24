@@ -35,14 +35,14 @@ export default function VehicleSelection() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#112253] to-[#fff] font-inter fade-in">
+    <div className="min-h-screen bg-gradient-to-r from-[#e9ecf2] to-[#dbe7ff] font-inter fade-in">
       <Header />
       <main className="px-6 py-10 text-white">
         <div className="logo-container mb-12">
           <img src="/logos/remoteking.png" alt="RemoteKing" className="remoteking-logo" />
         </div>
-        <h1 className="text-4xl font-bold mb-12 text-center">Select Your Vehicle Brands</h1>
-        <p className="text-center text-gray-300 mb-16">
+        <h1 className="text-4xl font-bold mb-12 text-center text-black">Select Your Vehicle Brands</h1>
+        <p className="text-center text-black/90 mb-16">
           Choose from our wide range of vehicle brands
         </p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -51,7 +51,8 @@ export default function VehicleSelection() {
               key={brand.name} 
               name={brand.name} 
               logo={brand.logo}
-              className="brand-card"
+              className="brand-card cursor-pointer"
+              onClick={() => handleBrandClick(brand.name)}
             />
           ))}
         </div>
