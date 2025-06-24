@@ -137,7 +137,7 @@ export default function VehicleSelection() {
                 {brandModels[selectedBrand].map((model) => (
                   <div
                     key={model}
-                    className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transform hover:scale-105 transition-all duration-200 border-2 ${
+                    className={`bg-[rgb(15 23 42 / 10%)] border-black rounded-lg shadow-md p-6 cursor-pointer transform hover:scale-105 transition-all duration-200 border-2 ${
                       selectedModel === model
                         ? "border-blue-500 bg-blue-50"
                         : "border-transparent hover:border-blue-300"

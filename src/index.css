@@ -74,7 +74,7 @@ body {
   margin-left: -60px;
   margin-top: -60px;
   border-radius: 50%;
-  border: 3px solid #4F8EF7;
+  border: 3px solid #0a1b38;
   opacity: 0.5;
   animation: wave-propagate 1.8s infinite;
   pointer-events: none;
