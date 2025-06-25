@@ -136,13 +136,10 @@ export default function VariantDetails({
                   <b>Silca Transponder:</b> {info.silcaTransponder}
                 </div>
                 <div>
-                  <b>Transponder Chip:</b> {info.transponderChip}
+                  <b>Remote Frequency:</b> {info.transponderChip}
                 </div>
                 <div>
-                  <b>Remote:</b> {info.remote}
-                </div>
-                <div>
-                  <b>Smart Pro Parts:</b> {info.smartProParts?.join(", ")}
+                  <b>Remote King Parts:</b> {info.smartProParts?.join(", ")}
                 </div>
                 <div>
                   <b>RWS/Smart Aerial Plus:</b>{" "}
@@ -163,7 +160,7 @@ export default function VariantDetails({
               <div className="space-y-2">
                 {[
                   { feature: "Remote Series", value: ["KD", "XH", "OEM"] },
-                  { feature: "Blade", value: "TKG" },
+                  { feature: "Blade Supplier", value: "KD" },
                   { feature: "Cloning Option", value: "No Data" },
                   { feature: "All Keys Lost", value: ["Autel", "Lonsdor"] },
                   { feature: "Add Spare Key", value: ["Autel", "Lonsdor"] },
@@ -223,7 +220,7 @@ export default function VariantDetails({
               >
                 <input
                   type="text"
-                  className="flex-1 border-2 border-gray-300 rounded-lg p-2 text-base focus:outline-none focus:ring-2 focus:ring-black-400"
+                  className="flex-1 border-2 border-gray-300 text-black rounded-lg p-2 text-base focus:outline-none focus:ring-2 focus:ring-black-400"
                   placeholder="Add a comment..."
                   value={customerComment}
                   onChange={(e) => setCustomerComment(e.target.value)}
@@ -231,7 +228,7 @@ export default function VariantDetails({
                 />
                 <button
                   type="submit"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-black-700 transition"
+                  className="bg-blue-600 text-Black px-4 py-2 rounded-lg font-semibold hover:bg-black-700 transition"
                 >
                   Enter
                 </button>
