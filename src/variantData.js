@@ -1,4 +1,5 @@
 // src/variantData.js
+const NA="Not Applicable";
 export const variantData = {
   "Giulia": {
     "2016-2018": {
@@ -20,17 +21,53 @@ export const variantData = {
         silcaKeyCutting: ["1077", "6127", "5992 Emergency Blade"]
       },
       programmingInfo: [
-        { feature: "Programming Spare Keys", supported: true },
-        { feature: "Programming All Keys Lost", supported: true },
-        { feature: "Minimum Key Required", value: "0" },
-        { feature: "Existing Key Will Be Erased", supported: true },
-        { feature: "Add Keys Without Existing", supported: true },
-        { feature: "Erase Keys Without Adding", supported: true },
-        { feature: "Pin Code Required (by OBD)", supported: true },
-        { feature: "Precoding Required", supported: false },
-        { feature: "Precoding Done Remotely", supported: false },
-        { feature: "Program Remote", supported: true }
-      ],
+  {
+    feature: "Cloning Options",
+    brands: {
+      KD: NA,
+      JMA: NA,
+      Keydiy: NA,
+      Xhorse: NA,
+    },
+  },
+  {
+    feature: "Key Blade Options",
+    brands: {
+      KD: true,
+      JMA: true,
+    },
+  },
+  {
+    feature: "Remote Options",
+    brands: {
+      Keydiy: false,
+      Xhorse: true,
+    },
+  },
+  {
+    feature: "All Keys Lost",
+    brands: {
+      XTool: true,
+      Autel: true,
+      KD: true,
+      JMA: false,
+      Keydiy: false,
+      Xhorse: true,
+    }
+  },
+  {
+    feature: "Add Spare Key",
+    brands: {
+      XTool: true,
+      Autel: true,
+      KD: false,
+      JMA: false,
+      Keydiy: true,
+      Xhorse: true,
+    }
+  },
+  // ...more features
+],
       emergencyStart: "There is an emergency key position in the vehicle for starting when the remote battery is flat. The key is inserted near the gear lever and the remote buttons are pressed once when prompted.",
       obdPortLocation: "Under the dashboard, near pedals.",
       images: {

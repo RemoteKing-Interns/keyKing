@@ -136,7 +136,7 @@ export default function VehicleSelection() {
             <div className="flex items-center justify-left mb-8">
               <button
                 onClick={handleBackToBrands}
-                className="bg-white text-blue-600 px-4 py-2 rounded-lg shadow hover:bg-gray-50 transition-colors duration-200 mr-4"
+                className="bg-white text-black font-bold px-4 py-2 rounded-lg shadow hover:bg-gray-50 transition-colors duration-200 mr-4"
               >
                 ← Back to Brands
               </button>
@@ -187,7 +187,7 @@ export default function VehicleSelection() {
             <div className="flex items-center justify-left mb-8">
               <button
                 onClick={handleBackToModels}
-                className="bg-white text-blue-600 px-4 py-2 rounded-lg shadow hover:bg-gray-50 transition-colors duration-200 mr-4"
+                className="bg-white text-black font-bold px-4 py-2 rounded-lg shadow hover:bg-gray-50 transition-colors duration-200 mr-4"
               >
                 ← Back to Models
               </button>
