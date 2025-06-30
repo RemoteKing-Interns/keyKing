@@ -13,12 +13,13 @@ export const variantData = {
         keyType: "Proximity",
         silcaKeyProfile: "SIP22",
         silcaTransponder: "4A",
-        transponderChip: "433 MHz",
+        transponderChip: "JMA TP12PV",
         remote: "433 MHz",
-        smartProParts: ["AKK260", "AKK263"],
-        rwsSmartAerialPlus: false,
-        rwaPlusMBox: false,
-        silcaKeyCutting: ["1077", "6127", "5992 Emergency Blade"]
+        KingParts: ["AKK260", "AKK263"],
+        // rwsSmartAerialPlus: false,
+        // rwaPlusMBox: false,
+        silcaKeyCutting: ["1077", "6127", "5992 Emergency Blade"],
+        Lishi:"LP-HU92-TL-AG",
       },
       programmingInfo: [
   {

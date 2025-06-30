@@ -31,6 +31,7 @@ const VehicleDetails = () => {
           <div><strong>Key:</strong> {vehicle.key}</div>
           <div><strong>Key Blade:</strong> {vehicle.keyBlade}</div>
           <div><strong>Transponder:</strong> {vehicle.transponder}</div>
+          <div><strong>Lishi:</strong> {vehicle.lishi}</div>
           {/* Add more fields as needed */}
         </div>
       </div>

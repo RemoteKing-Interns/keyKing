@@ -139,7 +139,10 @@ export default function VariantDetails({
                   <b>Remote Frequency:</b> {info.transponderChip}
                 </div>
                 <div>
-                  <b>Remote King Parts:</b> {info.smartProParts?.join(", ")}
+                  <b>Remote King Parts:</b> {info.KingParts?.join(", ")}
+                </div>
+                <div>
+                  <b>Lishi:</b> {info.Lishi}
                 </div>
                 {/* <div>
                   <b>RWS/Smart Aerial Plus:</b>{" "}
