@@ -130,10 +130,10 @@ export default function VariantDetails({
                   <b>Key Type:</b> {info.keyType}
                 </div>
                 <div>
-                  <b>Silca Key Profile:</b> {info.silcaKeyProfile}
+                  <b> Key Profile:</b> {info.silcaKeyProfile}
                 </div>
                 <div>
-                  <b>Silca Transponder:</b> {info.silcaTransponder}
+                  <b> Transponder:</b> {info.silcaTransponder}
                 </div>
                 <div>
                   <b>Remote Frequency:</b> {info.transponderChip}
@@ -141,13 +141,13 @@ export default function VariantDetails({
                 <div>
                   <b>Remote King Parts:</b> {info.smartProParts?.join(", ")}
                 </div>
-                <div>
+                {/* <div>
                   <b>RWS/Smart Aerial Plus:</b>{" "}
                   {info.rwsSmartAerialPlus ? "Yes" : "No"}
                 </div>
                 <div>
                   <b>RWA Plus M-Box:</b> {info.rwaPlusMBox ? "Yes" : "No"}
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
