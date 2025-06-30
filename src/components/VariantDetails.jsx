@@ -1,35 +1,134 @@
-// src/components/VariantDetails.jsx
 import React, { useState } from "react";
 import { variantData } from "../variantData";
 
-// Helper for badge rendering
-function renderValue(val) {
-  if (Array.isArray(val)) {
-    return (
-      <div className="flex flex-wrap gap-2">
-        {val.map((item) => (
-          <span
-            key={item}
-            className="inline-flex items-center px-2 py-1 text-xs font-bold rounded-full bg-blue-100 text-blue-700"
-          >
-            {item}
-          </span>
-        ))}
-      </div>
-    );
-  }
-  if (val === "No Data" || val === "Not Applicable") {
-    return (
-      <span className="inline-flex items-center px-2 py-1 text-xs font-bold rounded-full bg-gray-200 text-gray-500">
-        {val}
-      </span>
-    );
-  }
+// Helper for badge rendering with color
+function renderBrandBadge(brand, color) {
   return (
-    <span className="inline-flex items-center px-2 py-1 text-xs font-bold rounded-full bg-blue-100 text-blue-700">
-      {val}
+    <span
+      key={brand}
+      className="inline-flex items-center px-2 py-1 text-xs font-bold rounded-full mr-2"
+      style={{ background: color, color: "#fff" }}
+    >
+      {brand}
     </span>
   );
+}
+
+// Example programmingRows with models and colors
+const programmingRows = [
+  {
+    feature: "Remote Options",
+    value: ["KD", "XH", "OEM"],
+    models: {
+      KD: ["KD-01", "KD-02"],
+      XH: ["XH-01"],
+      OEM: ["OEM-01", "OEM-02"],
+    },
+    colors: {
+      KD: "#1e40af",
+      XH: "#f59e42",
+      OEM: "#10b981",
+    },
+  },
+  {
+    feature: "Blade Supplier",
+    value: ["KD"],
+    models: {
+      KD: ["KD-B1"],
+    },
+    colors: {
+      KD: "#1e40af",
+    },
+  },
+  {
+    feature: "Cloning Options",
+    value: ["Not Applicable"],
+    models: {
+      "Not Applicable": [],
+    },
+    colors: {
+      "Not Applicable": "#6b7280",
+    },
+  },
+  {
+    feature: "All Keys Lost",
+    value: ["Autel", "Lonsdor"],
+    models: {
+      Autel: ["Autel-A1"],
+      Lonsdor: ["Lonsdor-L1"],
+    },
+    colors: {
+      Autel: "#f43f5e",
+      Lonsdor: "#6366f1",
+    },
+  },
+  {
+    feature: "Add Spare Key",
+    value: ["Autel", "Lonsdor"],
+    models: {
+      Autel: ["Autel-S1"],
+      Lonsdor: ["Lonsdor-S1"],
+    },
+    colors: {
+      Autel: "#f43f5e",
+      Lonsdor: "#6366f1",
+    },
+  },
+  {
+    feature: "Add Remote",
+    value: ["Autel", "Lonsdor"],
+    models: {
+      Autel: ["Autel-R1"],
+      Lonsdor: ["Lonsdor-R1"],
+    },
+    colors: {
+      Autel: "#f43f5e",
+      Lonsdor: "#6366f1",
+    },
+  },
+  {
+    feature: "Pin Required",
+    value: ["Autel", "Lonsdor"],
+    models: {
+      Autel: ["Autel-P1"],
+      Lonsdor: ["Lonsdor-P1"],
+    },
+    colors: {
+      Autel: "#f43f5e",
+      Lonsdor: "#6366f1",
+    },
+  },
+  {
+    feature: "Pin Reading",
+    value: ["Not Applicable"],
+    models: {
+      "Not Applicable": [],
+    },
+    colors: {
+      "Not Applicable": "#6b7280",
+    },
+  },
+];
+
+// Example pathways data
+const pathways = [
+  {
+    name: "Autel",
+    path: "Alfa Romeo > ALL Remotes > Giulia",
+  },
+  {
+    name: "Xhorse",
+    path: "Alfa Romeo > Giulia > Smart Key",
+  },
+];
+
+// Get all unique brands
+function getAllUniqueBrands(rows) {
+  const set = new Set();
+  rows.forEach((row) => {
+    row.value.forEach((v) => set.add(v));
+  });
+  return Array.from(set);
 }
 
 export default function VariantDetails({
@@ -38,23 +137,13 @@ export default function VariantDetails({
   data,
   onBack,
 }) {
-  // State for customer comments
   const [customerComment, setCustomerComment] = useState("");
   const [comments, setComments] = useState([]);
+  const [selectedBrand, setSelectedBrand] = useState("");
 
   // Use data from props if provided, otherwise use variantData
   const info =
     data?.vehicleInfo || variantData?.[model]?.[variant]?.vehicleInfo || {};
-  const programming = data?.programmingInfo || [
-    { feature: "Remote Series", value: ["KD", "XH", "OEM"] },
-    { feature: "Blade", value: "TKG" },
-    { feature: "Cloning Option", value: "No Data" },
-    { feature: "All Keys Lost", value: ["Autel", "Lonsdor"] },
-    { feature: "Add Spare Key", value: ["Autel", "Lonsdor"] },
-    { feature: "Add Remote", value: ["Autel", "Lonsdor"] },
-    { feature: "Pin Required", value: ["Autel", "Lonsdor"] },
-    { feature: "Pin Reading", value: "No Data" },
-  ];
   const emergencyStart =
     data?.emergencyStart ||
     variantData?.[model]?.[variant]?.emergencyStart ||
@@ -77,6 +166,14 @@ export default function VariantDetails({
       setCustomerComment("");
     }
   };
+
+  // Unique brands for dropdown
+  const uniqueBrands = getAllUniqueBrands(programmingRows);
+
+  // Filtered rows: only show rows where value includes selectedBrand
+  const filteredRows = selectedBrand
+    ? programmingRows.filter((row) => row.value.includes(selectedBrand))
+    : programmingRows;
 
   return (
     <div className="w-full min-h-screen py-8 px-2 md:px-8">
@@ -144,33 +241,32 @@ export default function VariantDetails({
                 <div>
                   <b>Lishi:</b> {info.Lishi}
                 </div>
-                {/* <div>
-                  <b>RWS/Smart Aerial Plus:</b>{" "}
-                  {info.rwsSmartAerialPlus ? "Yes" : "No"}
-                </div>
-                <div>
-                  <b>RWA Plus M-Box:</b> {info.rwaPlusMBox ? "Yes" : "No"}
-                </div> */}
               </div>
             </div>
           </div>
-          {/* Right: Programming Info, Emergency, Comments */}
+          {/* Right: Programming Info, Emergency, Pathways, Comments */}
           <div className="flex flex-col gap-6">
             <div className="bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-6">
               <h3 className="font-semibold text-blue-700 mb-4 text-lg">
                 Programming Information
               </h3>
+              {/* Single filter dropdown */}
+              <div className="mb-4 flex justify-end">
+                <select
+                  className="border border-gray-300 rounded px-2 py-1 text-black text-sm"
+                  value={selectedBrand}
+                  onChange={(e) => setSelectedBrand(e.target.value)}
+                >
+                  <option value="">All</option>
+                  {uniqueBrands.map((val) => (
+                    <option key={val} value={val}>
+                      {val}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="space-y-2">
-                {[
-                  { feature: "Remote Options", value: ["KD", "XH", "OEM"] },
-                  { feature: "Blade Supplier", value: "KD" },
-                  { feature: "Cloning Options", value: "No Data" },
-                  { feature: "All Keys Lost", value: ["Autel", "Lonsdor"] },
-                  { feature: "Add Spare Key", value: ["Autel", "Lonsdor"] },
-                  { feature: "Add Remote", value: ["Autel", "Lonsdor"] },
-                  { feature: "Pin Required", value: ["Autel", "Lonsdor"] },
-                  { feature: "Pin Reading", value: "No Data" },
-                ].map((item, idx) => (
+                {filteredRows.map((item, idx) => (
                   <div
                     key={idx}
                     className="flex flex-col sm:flex-row sm:items-center bg-[#f6f8fc] rounded-lg px-4 py-2"
@@ -179,10 +275,36 @@ export default function VariantDetails({
                       {item.feature}
                     </div>
                     <div className="flex-1 mt-2 sm:mt-0">
-                      {renderValue(item.value)}
+                      {/* Only show the selected brand as badge if filtered, else show all */}
+                      {selectedBrand
+                        ? renderBrandBadge(
+                            selectedBrand,
+                            item.colors[selectedBrand]
+                          )
+                        : item.value.map((brand) =>
+                            renderBrandBadge(brand, item.colors[brand])
+                          )}
+                      {/* Show models if filtered and available */}
+                      {selectedBrand &&
+                        item.models[selectedBrand] &&
+                        item.models[selectedBrand].length > 0 && (
+                          <div className="mt-2 ml-2">
+                            <span className="text-xs text-gray-500">
+                              Models:{" "}
+                            </span>
+                            <span className="text-xs font-semibold text-gray-700">
+                              {item.models[selectedBrand].join(", ")}
+                            </span>
+                          </div>
+                        )}
                     </div>
                   </div>
                 ))}
+                {filteredRows.length === 0 && (
+                  <div className="text-gray-500 text-center py-4">
+                    No features match the selected brand.
+                  </div>
+                )}
               </div>
             </div>
             <div className="bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-6">
@@ -197,13 +319,30 @@ export default function VariantDetails({
               </h3>
               <p className="text-gray-700 text-sm">{obdPortLocation}</p>
             </div>
+            {/* Pathways Section */}
+            <div className="bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-6">
+              <h3 className="font-semibold text-blue-700 mb-2 text-lg">
+                Pathways
+              </h3>
+              <div className="space-y-2">
+                {pathways.map((p) => (
+                  <div key={p.name} className="flex items-center">
+                    <span className="font-semibold text-gray-700 w-20">
+                      {p.name}:
+                    </span>
+                    <span className="ml-2 text-sm text-gray-800">{p.path}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Comments Section */}
             <div className="bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-6">
               <h3 className="font-semibold text-blue-700 mb-2 text-lg">
                 Comments from Customer
               </h3>
               {/* Display comments */}
               <div className="space-y-2 mb-4">
-                {/* {comments.map((comment, idx) => (
+                {comments.map((comment, idx) => (
                   <div
                     key={idx}
                     className="flex items-center gap-2 bg-blue-50 rounded px-3 py-1"
@@ -213,7 +352,7 @@ export default function VariantDetails({
                     </span>
                     <span className="text-gray-800 text-sm">{comment}</span>
                   </div>
-                ))} */}
+                ))}
               </div>
               {/* Input box and button */}
               <form
@@ -231,7 +370,7 @@ export default function VariantDetails({
                 />
                 <button
                   type="submit"
-                  className="bg-blue-600 text-Black px-4 py-2 rounded-lg font-semibold hover:bg-black-700 transition"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-black-700 transition"
                 >
                   Enter
                 </button>
