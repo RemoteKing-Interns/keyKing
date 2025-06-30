@@ -162,9 +162,9 @@ export default function VariantDetails({
               </h3>
               <div className="space-y-2">
                 {[
-                  { feature: "Remote Series", value: ["KD", "XH", "OEM"] },
+                  { feature: "Remote Options", value: ["KD", "XH", "OEM"] },
                   { feature: "Blade Supplier", value: "KD" },
-                  { feature: "Cloning Option", value: "No Data" },
+                  { feature: "Cloning Options", value: "No Data" },
                   { feature: "All Keys Lost", value: ["Autel", "Lonsdor"] },
                   { feature: "Add Spare Key", value: ["Autel", "Lonsdor"] },
                   { feature: "Add Remote", value: ["Autel", "Lonsdor"] },
@@ -203,7 +203,7 @@ export default function VariantDetails({
               </h3>
               {/* Display comments */}
               <div className="space-y-2 mb-4">
-                {comments.map((comment, idx) => (
+                {/* {comments.map((comment, idx) => (
                   <div
                     key={idx}
                     className="flex items-center gap-2 bg-blue-50 rounded px-3 py-1"
@@ -213,7 +213,7 @@ export default function VariantDetails({
                     </span>
                     <span className="text-gray-800 text-sm">{comment}</span>
                   </div>
-                ))}
+                ))} */}
               </div>
               {/* Input box and button */}
               <form
