@@ -282,9 +282,6 @@ export default function VariantDetails({
                 </div>
               </div>
             </div>
-          </div>
-          {/* Right: Programming Info, Emergency, Pathways, Comments */}
-          <div className="flex flex-col gap-6">
             <div className="bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-6">
               <h3 className="font-semibold text-blue-700 mb-4 text-lg">
                 Programming Information
@@ -296,7 +293,7 @@ export default function VariantDetails({
                   value={selectedBrand}
                   onChange={(e) => setSelectedBrand(e.target.value)}
                 >
-                  <option value="">All</option>
+                  <option value="">Select Brand</option>
                   {uniqueBrands.map((val) => (
                     <option key={val} value={val}>
                       {val}
@@ -349,6 +346,9 @@ export default function VariantDetails({
                 <strong>*</strong> Select brand to see supported models
               </p>
             </div>
+          </div>
+          {/* Right: Programming Info, Emergency, Pathways, Comments */}
+          <div className="flex flex-col gap-6">
             <div className="bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-6">
               <h3 className="font-semibold text-blue-700 mb-2 text-lg">
                 Emergency Start
@@ -376,6 +376,21 @@ export default function VariantDetails({
                   </div>
                 ))}
               </div>
+            </div>
+            {/* Resources Section */}
+            <div className="bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-6">
+              <h3 className="font-semibold text-blue-700 mb-2 text-lg">
+                Resources
+              </h3>
+              <span className="font-semibold text-gray-700 w-20">Videos:</span>
+              <br></br>
+              <span className="font-semibold text-gray-700 w-20">
+                Documents:
+              </span>
+              <br></br>
+              <span className="font-semibold text-gray-700 w-20">Photos:</span>
+              <br></br>
+              <span className="font-semibold text-gray-700 w-20">Text:</span>
             </div>
             {/* Comments Section */}
             <div className="bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-6">
