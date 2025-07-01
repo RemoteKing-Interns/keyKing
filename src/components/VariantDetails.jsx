@@ -229,17 +229,56 @@ export default function VariantDetails({
                 <div>
                   <b> Key Profile:</b> {info.silcaKeyProfile}
                 </div>
-                <div>
+                {/* <div>
                   <b> Transponder:</b> {info.silcaTransponder}
+                </div> */}
+                <div>
+                  <b>Transponder Chip:</b>
+                  {info.transponderChip?.map((chip, idx) => (
+                    <React.Fragment key={chip}>
+                      <a
+                        href={info.transponderChipLinks?.[idx] || "#"}
+                        className="text-blue-600 underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {chip}
+                      </a>
+                      {idx < info.transponderChip.length - 1 && ", "}
+                    </React.Fragment>
+                  ))}
                 </div>
                 <div>
-                  <b>Remote Frequency:</b> {info.transponderChip}
+                  <b>Remote Frequency:</b> {info.remoteFrequency}
                 </div>
                 <div>
-                  <b>Remote King Parts:</b> {info.KingParts?.join(", ")}
+                  <b>Remote King Parts:</b>
+                  {info.KingParts?.map((part, idx) => (
+                    <React.Fragment key={part}>
+                      <a
+                        href={info.KingPartsLinks?.[idx] || "#"}
+                        className="text-blue-600 underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {part}
+                      </a>
+                      {idx < info.KingParts.length - 1 && ", "}
+                    </React.Fragment>
+                  ))}
                 </div>
                 <div>
-                  <b>Lishi:</b> {info.Lishi}
+                  <b>Lishi:</b>
+                  {info.Lishi && (
+                    <a
+                      href={info.LishiLink || "#"}
+                      className="text-blue-600 underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {info.Lishi}
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
@@ -306,6 +345,9 @@ export default function VariantDetails({
                   </div>
                 )}
               </div>
+              <p className="font-semibold text-red-500 text-center mt-4">
+                <strong>*</strong> Select brand to see supported models
+              </p>
             </div>
             <div className="bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-6">
               <h3 className="font-semibold text-blue-700 mb-2 text-lg">
