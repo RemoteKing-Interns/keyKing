@@ -154,6 +154,7 @@ export default function VariantDetails({
   const [comments, setComments] = useState([]);
   const [selectedBrand, setSelectedBrand] = useState("");
   const [isTextDropdownOpen, setIsTextDropdownOpen] = useState(false);
+  const [isResourcesDropdownOpen, setIsResourcesDropdownOpen] = useState(false);
   const [expandedImage, setExpandedImage] = useState(null);
 
   // Use data from props if provided, otherwise use variantData
@@ -210,7 +211,7 @@ export default function VariantDetails({
 
         {/* Main Grid Layout */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8 items-start">
-          {/* Left Column: Car image, Vehicle Info, Resources */}
+          {/* Left Column: Car image, Vehicle Info */}
           <div className="flex flex-col gap-4 sm:gap-6">
             {/* Car and Key Images */}
             <div className="order-1 bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-4 sm:p-6">
@@ -315,235 +316,9 @@ export default function VariantDetails({
                 </div>
               </div>
             </div>
-
-            {/* Resources Section */}
-            <div className="order-6 xl:order-3 bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-4 sm:p-6">
-              <h3 className="font-semibold text-blue-700 mb-2 text-lg">
-                Resources
-              </h3>
-              
-              {/* Videos */}
-              <div className="mb-4">
-                <span className="font-semibold text-gray-700">Videos:</span>
-                <div className="ml-0 sm:ml-4 space-y-3 mt-2">
-                  {/* YouTube Videos */}
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-800 mb-1">
-                      How to Program Car Keys (YouTube)
-                    </h4>
-                    <div className="w-full max-w-sm">
-                      <iframe
-                        width="100%"
-                        height="157"
-                        src="https://www.youtube.com/embed/towNfsz6QOc"
-                        title="How to Program Car Keys"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        className="rounded border w-full max-w-xs sm:max-w-sm"
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                          e.target.nextSibling.style.display = "block";
-                        }}
-                      ></iframe>
-                      <div style={{ display: "none" }} className="text-blue-700">
-                        <a
-                          href="https://youtu.be/towNfsz6QOc"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="underline"
-                        >
-                          Watch: How to Program Car Keys
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-800 mb-1">
-                      OBD Port Location Guide (YouTube)
-                    </h4>
-                    <div className="w-full max-w-sm">
-                      <iframe
-                        width="100%"
-                        height="157"
-                        src="https://www.youtube.com/embed/SxPRZEGMqpM"
-                        title="OBD Port Location"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        className="rounded border w-full max-w-xs sm:max-w-sm"
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                          e.target.nextSibling.style.display = "block";
-                        }}
-                      ></iframe>
-                      <div style={{ display: "none" }} className="text-blue-700">
-                        <a
-                          href="https://youtu.be/SxPRZEGMqpM"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="underline"
-                        >
-                          Watch: OBD Port Location Guide
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Documents */}
-              <div className="mb-4">
-                <span className="font-semibold text-gray-700">Documents:</span>
-                <ul className="ml-0 sm:ml-4 list-disc text-blue-700 mt-1 space-y-1">
-                  <li>
-                    <a
-                      href="https://example.com/giulia-programming-guide.pdf"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline text-sm"
-                    >
-                      Giulia Programming Guide
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://example.com/giulia-key-specs.docx"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline text-sm"
-                    >
-                      Key Specs Document
-                    </a>
-                  </li>
-                  <li>
-                    <span className="text-gray-800 text-sm">Programming User Guides:</span>
-                    <ul className="ml-4 mt-1 space-y-1">
-                      <li>
-                        <a
-                          href="http://xdn-product.cdn.lonsdor.com/instructions/K518PRO/9542b9af36571aca5cc1510d031e1f0b.pdf"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="underline text-sm"
-                        >
-                          Autel Maxim KM100
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="http://xdn-product.cdn.lonsdor.com/instructions/K518PRO/9542b9af36571aca5cc1510d031e1f0b.pdf"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="underline text-sm"
-                        >
-                          Maxim 1M508S
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="http://xdn-product.cdn.lonsdor.com/instructions/K518PRO/9542b9af36571aca5cc1510d031e1f0b.pdf"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="underline text-sm"
-                        >
-                          Xhorse VVDI Key Tool
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="http://xdn-product.cdn.lonsdor.com/instructions/K518PRO/9542b9af36571aca5cc1510d031e1f0b.pdf"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="underline text-sm"
-                        >
-                          Lonsdor K518 Pro
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Photos */}
-              <div className="mb-4">
-                <span className="font-semibold text-gray-700">Photos:</span>
-                <div className="ml-0 sm:ml-4 flex flex-wrap gap-2 mt-2">
-                  {[
-                    { src: "public/images/Giulia.png", alt: "Car" },
-                    { src: "public/images/Key1.png", alt: "Remote" },
-                    { src: "public/images/obd.jpg", alt: "OBD Port" },
-                  ].map((img) => (
-                    <img
-                      key={img.alt}
-                      src={img.src}
-                      alt={img.alt}
-                      className="rounded border w-20 sm:w-24 cursor-pointer transition-transform duration-200 hover:scale-105"
-                      onClick={() => setExpandedImage(img)}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Additional Information Dropdown */}
-              <div>
-                <div className="ml-0 sm:ml-4">
-                  <button
-                    onClick={() => setIsTextDropdownOpen(!isTextDropdownOpen)}
-                    className="font-semibold text-gray-700 flex items-center gap-1 text-sm sm:text-base"
-                  >
-                    <span>Additional Information</span>
-                    <span
-                      className={`transform transition-transform ${
-                        isTextDropdownOpen ? "rotate-180" : ""
-                      }`}
-                    >
-                      ▼
-                    </span>
-                  </button>
-                  {isTextDropdownOpen && (
-                    <div className="mt-2 text-gray-800 text-sm space-y-2 bg-gray-50 p-3 rounded border">
-                      <p>
-                        "Insert the remote near the gear lever and press the
-                        button once when prompted. If the vehicle does not
-                        recognize the remote, ensure the battery is not depleted
-                        and try again. In some cases, holding the remote closer
-                        to the start button may help establish a connection.
-                        Always keep a spare battery for the remote in your glove
-                        compartment to avoid unexpected issues during
-                        emergencies or long trips."
-                      </p>
-                      <p>
-                        "The OBD port is located under the dashboard, near the
-                        pedals. For easier access, move the driver's seat back
-                        fully and use a flashlight to locate the port. Before
-                        connecting any diagnostic or programming tool, ensure
-                        the ignition is in the ON position but the engine is not
-                        running. Avoid using excessive force when plugging in
-                        the OBD connector, as this may damage the port or the
-                        tool. If you encounter resistance, double-check the
-                        alignment and try again gently."
-                      </p>
-                      <p>
-                        "For emergency start, ensure the vehicle is in park mode
-                        and the brake pedal is pressed. The emergency key blade
-                        can be found inside the remote housing. To access it,
-                        slide the release button on the back of the remote and
-                        pull out the blade. Insert the blade into the key slot,
-                        usually hidden behind a small cover near the steering
-                        column or gear lever. After starting the vehicle,
-                        remember to return the emergency blade to the remote to
-                        prevent loss. If the vehicle fails to start, consult the
-                        owner's manual or contact roadside assistance for
-                        further instructions."
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
           </div>
 
-          {/* Right Column: Programming Info, Emergency, Pathways, Comments */}
+          {/* Right Column: Programming Info, Pathways, Resources, Comments */}
           <div className="flex flex-col gap-4 sm:gap-6">
             {/* Programming Information */}
             <div className="order-3 xl:order-1 bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-4 sm:p-6">
@@ -622,24 +397,8 @@ export default function VariantDetails({
               </p>
             </div>
 
-            {/* Emergency Start */}
-            <div className="order-4 xl:order-2 bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-4 sm:p-6">
-              <h3 className="font-semibold text-blue-700 mb-2 text-lg">
-                Emergency Start
-              </h3>
-              <p className="text-gray-700 text-sm">{emergencyStart}</p>
-            </div>
-
-            {/* OBD Port Location */}
-            <div className="order-5 xl:order-3 bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-4 sm:p-6">
-              <h3 className="font-semibold text-blue-700 mb-2 text-lg">
-                OBD Port Location
-              </h3>
-              <p className="text-gray-700 text-sm">{obdPortLocation}</p>
-            </div>
-
             {/* Pathways Section */}
-            <div className="order-7 xl:order-4 bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-4 sm:p-6">
+            <div className="order-4 xl:order-2 bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-4 sm:p-6">
               <h3 className="font-semibold text-blue-700 mb-2 text-lg">
                 Pathways
               </h3>
@@ -657,8 +416,289 @@ export default function VariantDetails({
               </div>
             </div>
 
+            {/* Resources Section - Now includes Emergency Start & OBD Port */}
+            <div className="order-5 xl:order-3 bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-4 sm:p-6">
+              <button
+                onClick={() => setIsResourcesDropdownOpen(!isResourcesDropdownOpen)}
+                className="font-semibold text-blue-700 flex items-center gap-1 text-lg w-full justify-between"
+              >
+                <span>Resources & Information</span>
+                <span
+                  className={`transform transition-transform ${
+                    isResourcesDropdownOpen ? "rotate-180" : ""
+                  }`}
+                >
+                  ▼
+                </span>
+              </button>
+              
+              {isResourcesDropdownOpen && (
+                <div className="mt-4 space-y-6">
+                  {/* Emergency Start & OBD Port - Quick Reference */}
+                  <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                    <h4 className="font-semibold text-yellow-800 mb-3 text-base">
+                      🚨 Quick Reference Guide
+                    </h4>
+                    
+                    <div className="space-y-3">
+                      <div>
+                        <h5 className="font-semibold text-yellow-700 text-sm mb-1">
+                          Emergency Start:
+                        </h5>
+                        <p className="text-yellow-800 text-sm leading-relaxed">
+                          {emergencyStart}
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h5 className="font-semibold text-yellow-700 text-sm mb-1">
+                          OBD Port Location:
+                        </h5>
+                        <p className="text-yellow-800 text-sm leading-relaxed">
+                          {obdPortLocation}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Videos */}
+                  <div>
+                    <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                      🎥 Training Videos
+                    </h4>
+                    <div className="ml-0 sm:ml-4 space-y-3">
+                      <div>
+                        <h5 className="text-sm font-medium text-gray-800 mb-1">
+                          How to Program Car Keys (YouTube)
+                        </h5>
+                        <div className="w-full max-w-sm">
+                          <iframe
+                            width="100%"
+                            height="157"
+                            src="https://www.youtube.com/embed/towNfsz6QOc"
+                            title="How to Program Car Keys"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            className="rounded border w-full max-w-xs sm:max-w-sm"
+                            onError={(e) => {
+                              e.target.style.display = "none";
+                              e.target.nextSibling.style.display = "block";
+                            }}
+                          ></iframe>
+                          <div style={{ display: "none" }} className="text-blue-700">
+                            <a
+                              href="https://youtu.be/towNfsz6QOc"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="underline"
+                            >
+                              Watch: How to Program Car Keys
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <h5 className="text-sm font-medium text-gray-800 mb-1">
+                          OBD Port Location Guide (YouTube)
+                        </h5>
+                        <div className="w-full max-w-sm">
+                          <iframe
+                            width="100%"
+                            height="157"
+                            src="https://www.youtube.com/embed/SxPRZEGMqpM"
+                            title="OBD Port Location"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            className="rounded border w-full max-w-xs sm:max-w-sm"
+                            onError={(e) => {
+                              e.target.style.display = "none";
+                              e.target.nextSibling.style.display = "block";
+                            }}
+                          ></iframe>
+                          <div style={{ display: "none" }} className="text-blue-700">
+                            <a
+                              href="https://youtu.be/SxPRZEGMqpM"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="underline"
+                            >
+                              Watch: OBD Port Location Guide
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Documents */}
+                  <div>
+                    <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                      📄 Documentation & Manuals
+                    </h4>
+                    <ul className="ml-0 sm:ml-4 space-y-2">
+                      <li>
+                        <a
+                          href="https://example.com/giulia-programming-guide.pdf"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline text-sm hover:text-blue-800"
+                        >
+                          📋 Giulia Programming Guide
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="https://example.com/giulia-key-specs.docx"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline text-sm hover:text-blue-800"
+                        >
+                          📊 Key Specs Document
+                        </a>
+                      </li>
+                      <li>
+                        <div className="text-gray-800 text-sm font-medium mb-1">
+                          🔧 Programming Tool Manuals:
+                        </div>
+                        <ul className="ml-4 space-y-1">
+                          <li>
+                            <a
+                              href="http://xdn-product.cdn.lonsdor.com/instructions/K518PRO/9542b9af36571aca5cc1510d031e1f0b.pdf"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 underline text-sm hover:text-blue-800"
+                            >
+                              • Autel Maxim KM100
+                            </a>
+                          </li>
+                          <li>
+                            <a
+                              href="http://xdn-product.cdn.lonsdor.com/instructions/K518PRO/9542b9af36571aca5cc1510d031e1f0b.pdf"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 underline text-sm hover:text-blue-800"
+                            >
+                              • Maxim 1M508S
+                            </a>
+                          </li>
+                          <li>
+                            <a
+                              href="http://xdn-product.cdn.lonsdor.com/instructions/K518PRO/9542b9af36571aca5cc1510d031e1f0b.pdf"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 underline text-sm hover:text-blue-800"
+                            >
+                              • Xhorse VVDI Key Tool
+                            </a>
+                          </li>
+                          <li>
+                            <a
+                              href="http://xdn-product.cdn.lonsdor.com/instructions/K518PRO/9542b9af36571aca5cc1510d031e1f0b.pdf"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 underline text-sm hover:text-blue-800"
+                            >
+                              • Lonsdor K518 Pro
+                            </a>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Photos */}
+                  <div>
+                    <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                      📸 Reference Photos
+                    </h4>
+                    <div className="ml-0 sm:ml-4 flex flex-wrap gap-2">
+                      {[
+                        { src: "public/images/Giulia.png", alt: "Car" },
+                        { src: "public/images/Key1.png", alt: "Remote" },
+                        { src: "public/images/obd.jpg", alt: "OBD Port" },
+                      ].map((img) => (
+                        <img
+                          key={img.alt}
+                          src={img.src}
+                          alt={img.alt}
+                          className="rounded border w-20 sm:w-24 cursor-pointer transition-transform duration-200 hover:scale-105 shadow-sm"
+                          onClick={() => setExpandedImage(img)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Additional Information Dropdown */}
+                  <div>
+                    <button
+                      onClick={() => setIsTextDropdownOpen(!isTextDropdownOpen)}
+                      className="font-semibold text-gray-700 flex items-center gap-1 text-sm sm:text-base"
+                    >
+                      <span>💡 Additional Tips & Information</span>
+                      <span
+                        className={`transform transition-transform ${
+                          isTextDropdownOpen ? "rotate-180" : ""
+                        }`}
+                      >
+                        ▼
+                      </span>
+                    </button>
+                    {isTextDropdownOpen && (
+                      <div className="mt-2 text-gray-800 text-sm space-y-3 bg-gray-50 p-4 rounded border">
+                        <div>
+                          <h6 className="font-semibold text-gray-700 mb-1">🔑 Remote Battery Tips:</h6>
+                          <p>
+                            "Insert the remote near the gear lever and press the
+                            button once when prompted. If the vehicle does not
+                            recognize the remote, ensure the battery is not depleted
+                            and try again. In some cases, holding the remote closer
+                            to the start button may help establish a connection.
+                            Always keep a spare battery for the remote in your glove
+                            compartment to avoid unexpected issues during
+                            emergencies or long trips."
+                          </p>
+                        </div>
+                        <div>
+                          <h6 className="font-semibold text-gray-700 mb-1">🔌 OBD Connection Guide:</h6>
+                          <p>
+                            "The OBD port is located under the dashboard, near the
+                            pedals. For easier access, move the driver's seat back
+                            fully and use a flashlight to locate the port. Before
+                            connecting any diagnostic or programming tool, ensure
+                            the ignition is in the ON position but the engine is not
+                            running. Avoid using excessive force when plugging in
+                            the OBD connector, as this may damage the port or the
+                            tool. If you encounter resistance, double-check the
+                            alignment and try again gently."
+                          </p>
+                        </div>
+                        <div>
+                          <h6 className="font-semibold text-gray-700 mb-1">🚗 Emergency Start Procedure:</h6>
+                          <p>
+                            "For emergency start, ensure the vehicle is in park mode
+                            and the brake pedal is pressed. The emergency key blade
+                            can be found inside the remote housing. To access it,
+                            slide the release button on the back of the remote and
+                            pull out the blade. Insert the blade into the key slot,
+                            usually hidden behind a small cover near the steering
+                            column or gear lever. After starting the vehicle,
+                            remember to return the emergency blade to the remote to
+                            prevent loss. If the vehicle fails to start, consult the
+                            owner's manual or contact roadside assistance for
+                            further instructions."
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Comments Section */}
-            <div className="order-8 xl:order-5 bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-4 sm:p-6">
+            <div className="order-6 xl:order-4 bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-4 sm:p-6">
               <h3 className="font-semibold text-blue-700 mb-2 text-lg">
                 Comments from Customer
               </h3>
