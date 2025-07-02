@@ -140,6 +140,7 @@ export default function VariantDetails({
   const [customerComment, setCustomerComment] = useState("");
   const [comments, setComments] = useState([]);
   const [selectedBrand, setSelectedBrand] = useState("");
+  const [isTextDropdownOpen, setIsTextDropdownOpen] = useState(false);
 
   // Use data from props if provided, otherwise use variantData
   const info =
@@ -229,11 +230,8 @@ export default function VariantDetails({
                 <div>
                   <b> Key Profile:</b> {info.silcaKeyProfile}
                 </div>
-                {/* <div>
-                  <b> Transponder:</b> {info.silcaTransponder}
-                </div> */}
                 <div>
-                  <b>Transponder Chip:</b>
+                  <b>Transponder Chip:</b>{" "}
                   {info.transponderChip?.map((chip, idx) => (
                     <React.Fragment key={chip}>
                       <a
@@ -252,7 +250,7 @@ export default function VariantDetails({
                   <b>Remote Frequency:</b> {info.remoteFrequency}
                 </div>
                 <div>
-                  <b>Remote King Parts:</b>
+                  <b>Remote King Parts:</b>{" "}
                   {info.KingParts?.map((part, idx) => (
                     <React.Fragment key={part}>
                       <a
@@ -268,7 +266,7 @@ export default function VariantDetails({
                   ))}
                 </div>
                 <div>
-                  <b>Lishi:</b>
+                  <b>Lishi:</b>{" "}
                   {info.Lishi && (
                     <a
                       href={info.LishiLink || "#"}
@@ -347,7 +345,7 @@ export default function VariantDetails({
               </p>
             </div>
           </div>
-          {/* Right: Programming Info, Emergency, Pathways, Comments */}
+          {/* Right: Emergency, Pathways, Resources, Comments */}
           <div className="flex flex-col gap-6">
             <div className="bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-6">
               <h3 className="font-semibold text-blue-700 mb-2 text-lg">
@@ -382,15 +380,170 @@ export default function VariantDetails({
               <h3 className="font-semibold text-blue-700 mb-2 text-lg">
                 Resources
               </h3>
-              <span className="font-semibold text-gray-700 w-20">Videos:</span>
-              <br></br>
-              <span className="font-semibold text-gray-700 w-20">
-                Documents:
-              </span>
-              <br></br>
-              <span className="font-semibold text-gray-700 w-20">Photos:</span>
-              <br></br>
-              <span className="font-semibold text-gray-700 w-20">Text:</span>
+              <div className="mb-2">
+                <span className="font-semibold text-gray-700 w-20">
+                  Videos:
+                </span>
+                <div className="ml-4 space-y-3 mt-2">
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-800 mb-1">
+                      How to Program Car Keys
+                    </h4>
+                    <iframe
+                      width="280"
+                      height="157"
+                      src="https://www.youtube.com/embed/towNfsz6QOc"
+                      title="How to Program Car Keys"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="rounded border"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                        e.target.nextSibling.style.display = "block";
+                      }}
+                    ></iframe>
+                    <div style={{ display: "none" }} className="text-blue-700">
+                      <a
+                        href="https://youtu.be/towNfsz6QOc"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline"
+                      >
+                        Watch: How to Program Car Keys
+                      </a>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-800 mb-1">
+                      OBD Port Location Guide
+                    </h4>
+                    <iframe
+                      width="280"
+                      height="157"
+                      src="https://www.youtube.com/embed/SxPRZEGMqpM?si=TQ4JvM4Pd4KHoz8j"
+                      title="OBD Port Location"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="rounded border"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                        e.target.nextSibling.style.display = "block";
+                      }}
+                    ></iframe>
+                    <div style={{ display: "none" }} className="text-blue-700">
+                      <a
+                        href="https://youtu.be/kNdScNwuNg4"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline"
+                      >
+                        Watch: OBD Port Location Guide
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="mb-2">
+                <span className="font-semibold text-gray-700 w-20">
+                  Documents:
+                </span>
+                <ul className="ml-4 list-disc text-blue-700">
+                  <li>
+                    <a
+                      href="https://example.com/giulia-programming-guide.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      Giulia Programming Guide (PDF)
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://example.com/giulia-key-specs.docx"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      Key Specs Document (DOCX)
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div className="mb-2">
+                <span className="font-semibold text-gray-700 w-20">
+                  Photos:
+                </span>
+                <div className="ml-4 flex gap-2">
+                  <img
+                    src="https://placehold.co/80x50?text=Car"
+                    alt="Car"
+                    className="rounded border"
+                  />
+                  <img
+                    src="https://placehold.co/80x50?text=Remote"
+                    alt="Remote"
+                    className="rounded border"
+                  />
+                </div>
+              </div>
+              <div>
+                <div className="ml-4">
+                  <button
+                    onClick={() => setIsTextDropdownOpen(!isTextDropdownOpen)}
+                    className="font-semibold text-gray-700"
+                  >
+                    <span>Additional Information</span>
+                    <span
+                      className={`transform transition-transform ${
+                        isTextDropdownOpen ? "rotate-180" : ""
+                      }`}
+                    >
+                      ▼
+                    </span>
+                  </button>
+                  {isTextDropdownOpen && (
+                    <div className="mt-2 text-gray-800 text-sm space-y-2 bg-gray-50 p-3 rounded border">
+                      <p>
+                        "Insert the remote near the gear lever and press the
+                        button once when prompted. If the vehicle does not
+                        recognize the remote, ensure the battery is not depleted
+                        and try again. In some cases, holding the remote closer
+                        to the start button may help establish a connection.
+                        Always keep a spare battery for the remote in your glove
+                        compartment to avoid unexpected issues during
+                        emergencies or long trips."
+                      </p>
+                      <p>
+                        "The OBD port is located under the dashboard, near the
+                        pedals. For easier access, move the driver’s seat back
+                        fully and use a flashlight to locate the port. Before
+                        connecting any diagnostic or programming tool, ensure
+                        the ignition is in the ON position but the engine is not
+                        running. Avoid using excessive force when plugging in
+                        the OBD connector, as this may damage the port or the
+                        tool. If you encounter resistance, double-check the
+                        alignment and try again gently."
+                      </p>
+                      <p>
+                        "For emergency start, ensure the vehicle is in park mode
+                        and the brake pedal is pressed. The emergency key blade
+                        can be found inside the remote housing. To access it,
+                        slide the release button on the back of the remote and
+                        pull out the blade. Insert the blade into the key slot,
+                        usually hidden behind a small cover near the steering
+                        column or gear lever. After starting the vehicle,
+                        remember to return the emergency blade to the remote to
+                        prevent loss. If the vehicle fails to start, consult the
+                        owner’s manual or contact roadside assistance for
+                        further instructions."
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
             {/* Comments Section */}
             <div className="bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-6">
