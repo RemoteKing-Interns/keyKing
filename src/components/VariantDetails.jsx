@@ -1,20 +1,27 @@
 import React, { useState } from "react";
 import { variantData } from "../variantData";
 
-// Helper for badge rendering with color
-function renderBrandBadge(brand, color) {
-  return (
+// Helper for badge rendering with color and clickable image functionality
+function renderBrandBadge(brand, color, image = null, onImageClick = null) {
+  // If image is provided, make the badge clickable
+  const badge = (
     <span
-      key={brand}
-      className="inline-flex items-center px-2 py-1 text-xs font-bold rounded-full mr-2"
-      style={{ background: color, color: "#fff" }}
+      className="inline-flex items-center px-2 py-1 text-xs font-bold rounded-full"
+      style={{ background: color, color: "#fff", cursor: image ? "pointer" : "default" }}
+      onClick={image && onImageClick ? () => onImageClick(image) : undefined}
+      title={image ? `Click to view ${brand} image` : undefined}
     >
       {brand}
     </span>
   );
+  return (
+    <span key={brand} className="inline-flex items-center mr-2">
+      {badge}
+    </span>
+  );
 }
 
-// Example programmingRows with models and colors
+// Example programmingRows with models, colors, and images
 const programmingRows = [
   {
     feature: "Remote Options",
@@ -29,6 +36,12 @@ const programmingRows = [
       XH: "#f59e42",
       OEM: "#10b981",
     },
+    // images: {
+    //   KD: { src: "public/images/kd-tool.png", alt: "KD Remote" },
+    //   // You can add images for XH and OEM here if you want
+    //    XH: { src: "public/images/xh-tool.png", alt: "XH Remote" },
+    //    OEM: { src: "public/images/OEM-remote.png", alt: "OEM Remote" },
+    // },
   },
   {
     feature: "Blade Supplier",
@@ -141,6 +154,7 @@ export default function VariantDetails({
   const [comments, setComments] = useState([]);
   const [selectedBrand, setSelectedBrand] = useState("");
   const [isTextDropdownOpen, setIsTextDropdownOpen] = useState(false);
+  const [expandedImage, setExpandedImage] = useState(null);
 
   // Use data from props if provided, otherwise use variantData
   const info =
@@ -313,10 +327,17 @@ export default function VariantDetails({
                       {selectedBrand
                         ? renderBrandBadge(
                             selectedBrand,
-                            item.colors[selectedBrand]
+                            item.colors[selectedBrand],
+                            item.images?.[selectedBrand],
+                            setExpandedImage
                           )
                         : item.value.map((brand) =>
-                            renderBrandBadge(brand, item.colors[brand])
+                            renderBrandBadge(
+                              brand,
+                              item.colors[brand],
+                              item.images?.[brand],
+                              setExpandedImage
+                            )
                           )}
                       {/* Show models if filtered and available */}
                       {selectedBrand &&
@@ -385,9 +406,10 @@ export default function VariantDetails({
                   Videos:
                 </span>
                 <div className="ml-4 space-y-3 mt-2">
+                  {/* YouTube Videos */}
                   <div>
                     <h4 className="text-sm font-medium text-gray-800 mb-1">
-                      How to Program Car Keys
+                      How to Program Car Keys (YouTube)
                     </h4>
                     <iframe
                       width="280"
@@ -416,12 +438,12 @@ export default function VariantDetails({
                   </div>
                   <div>
                     <h4 className="text-sm font-medium text-gray-800 mb-1">
-                      OBD Port Location Guide
+                      OBD Port Location Guide (YouTube)
                     </h4>
                     <iframe
                       width="280"
                       height="157"
-                      src="https://www.youtube.com/embed/SxPRZEGMqpM?si=TQ4JvM4Pd4KHoz8j"
+                      src="https://www.youtube.com/embed/SxPRZEGMqpM"
                       title="OBD Port Location"
                       frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -434,7 +456,7 @@ export default function VariantDetails({
                     ></iframe>
                     <div style={{ display: "none" }} className="text-blue-700">
                       <a
-                        href="https://youtu.be/kNdScNwuNg4"
+                        href="https://youtu.be/SxPRZEGMqpM"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="underline"
@@ -457,7 +479,7 @@ export default function VariantDetails({
                       rel="noopener noreferrer"
                       className="underline"
                     >
-                      Giulia Programming Guide (PDF)
+                      Giulia Programming Guide
                     </a>
                   </li>
                   <li>
@@ -467,8 +489,53 @@ export default function VariantDetails({
                       rel="noopener noreferrer"
                       className="underline"
                     >
-                      Key Specs Document (DOCX)
+                      Key Specs Document
                     </a>
+                  </li>
+                  <li>
+                    <span className="text-gray-800">Programming User Guides:</span>
+                    <ul className="ml-4 mt-1 space-y-1">
+                      <li>
+                        <a
+                          href="http://xdn-product.cdn.lonsdor.com/instructions/K518PRO/9542b9af36571aca5cc1510d031e1f0b.pdf"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                        >
+                          Autel Maxim KM100
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="http://xdn-product.cdn.lonsdor.com/instructions/K518PRO/9542b9af36571aca5cc1510d031e1f0b.pdf"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                        >
+                          Maxim 1M508S
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="http://xdn-product.cdn.lonsdor.com/instructions/K518PRO/9542b9af36571aca5cc1510d031e1f0b.pdf"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                        >
+                          Xhorse VVDI Key Tool
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="http://xdn-product.cdn.lonsdor.com/instructions/K518PRO/9542b9af36571aca5cc1510d031e1f0b.pdf"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                        >
+                          Lonsdor K518 Pro
+                        </a>
+                      </li>
+                    </ul>
                   </li>
                 </ul>
               </div>
@@ -477,23 +544,26 @@ export default function VariantDetails({
                   Photos:
                 </span>
                 <div className="ml-4 flex gap-2">
-                  <img
-                    src="https://placehold.co/80x50?text=Car"
-                    alt="Car"
-                    className="rounded border"
-                  />
-                  <img
-                    src="https://placehold.co/80x50?text=Remote"
-                    alt="Remote"
-                    className="rounded border"
-                  />
+                  {[
+                    { src: "public/images/Giulia.png", alt: "Car" },
+                    { src: "public/images/Key1.png", alt: "Remote" },
+                    { src: "public/images/obd.jpg", alt: "OBD Port" },
+                  ].map((img) => (
+                    <img
+                      key={img.alt}
+                      src={img.src}
+                      alt={img.alt}
+                      className="rounded border w-24 cursor-pointer transition-transform duration-200 hover:scale-105"
+                      onClick={() => setExpandedImage(img)}
+                    />
+                  ))}
                 </div>
               </div>
               <div>
                 <div className="ml-4">
                   <button
                     onClick={() => setIsTextDropdownOpen(!isTextDropdownOpen)}
-                    className="font-semibold text-gray-700"
+                    className="font-semibold text-gray-700 flex items-center gap-1"
                   >
                     <span>Additional Information</span>
                     <span
@@ -518,7 +588,7 @@ export default function VariantDetails({
                       </p>
                       <p>
                         "The OBD port is located under the dashboard, near the
-                        pedals. For easier access, move the driver’s seat back
+                        pedals. For easier access, move the driver's seat back
                         fully and use a flashlight to locate the port. Before
                         connecting any diagnostic or programming tool, ensure
                         the ignition is in the ON position but the engine is not
@@ -537,7 +607,7 @@ export default function VariantDetails({
                         column or gear lever. After starting the vehicle,
                         remember to return the emergency blade to the remote to
                         prevent loss. If the vehicle fails to start, consult the
-                        owner’s manual or contact roadside assistance for
+                        owner's manual or contact roadside assistance for
                         further instructions."
                       </p>
                     </div>
@@ -589,6 +659,30 @@ export default function VariantDetails({
           </div>
         </div>
       </div>
+
+      {/* Image Expansion Modal */}
+      {expandedImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
+          onClick={() => setExpandedImage(null)}
+          style={{ cursor: "zoom-out" }}
+        >
+          <img
+            src={expandedImage.src}
+            alt={expandedImage.alt}
+            className="max-h-[90vh] max-w-[90vw] rounded-lg shadow-lg border-4 border-white"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button
+            className="absolute top-6 right-8 text-white text-3xl font-bold"
+            onClick={() => setExpandedImage(null)}
+            aria-label="Close"
+            style={{ background: "none", border: "none", cursor: "pointer" }}
+          >
+            ×
+          </button>
+        </div>
+      )}
     </div>
   );
 }
