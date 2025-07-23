@@ -1,20 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchBrands } from "../features/brandsSlice";
 import BrandCard from "../components/BrandCard";
 import Footer from "../components/Footer";
 import { variantData } from "../variantData";
 import VariantDetails from "../components/VariantDetails";
-
-const brands = [
-  { name: "ALFA-ROMEO", logo: "/logos/alfa-romeo.png" },
-  { name: "BMW", logo: "/logos/bmw.png" },
-  { name: "CHRYSLER", logo: "/logos/chrysler.png" },
-  { name: "DODGE", logo: "/logos/dodge.png" },
-  { name: "FORD", logo: "/logos/ford.png" },
-  { name: "HOLDEN", logo: "/logos/holden.png" },
-  { name: "HONDA", logo: "/logos/honda.png" },
-  { name: "HUMMER", logo: "/logos/hummer.png" },
-];
 
 const carimages = [
   { name: "Giulia", img: "/images/Giulia.png" },
@@ -45,17 +36,20 @@ const modelVariants = {
 };
 
 export default function VehicleSelection() {
-  const [loading, setLoading] = useState(true);
+  // redux
+  const dispatch = useDispatch();
+  const { items: brands, status: brandsStatus } = useSelector((state) => state.brands);
+  const loading = brandsStatus === "loading";
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
+  
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+    if (brandsStatus === "idle") {
+      dispatch(fetchBrands());
+    }
+  }, [brandsStatus, dispatch]);
 
   const handleBrandClick = (brandName) => {
     setSelectedBrand(brandName);
@@ -117,15 +111,16 @@ export default function VehicleSelection() {
               Choose from our wide range of vehicle brands
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {brands.map((brand) => (
-                <BrandCard
-                  key={brand.name}
-                  name={brand.name}
-                  logo={brand.logo}
-                  className="brand-card cursor-pointer transform hover:scale-105 transition-transform duration-200"
-                  onClick={() => handleBrandClick(brand.name)}
-                />
-              ))}
+              {Array.isArray(brands) &&
+                brands.map((brand) => (
+                  <BrandCard
+                    key={brand.name}
+                    name={brand.name}
+                    logo={brand.logoUrl}
+                    className="brand-card cursor-pointer transform hover:scale-105 transition-transform duration-200"
+                    onClick={() => handleBrandClick(brand.name)}
+                  />
+                ))}
             </div>
           </>
         )}

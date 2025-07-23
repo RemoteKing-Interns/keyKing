@@ -14,7 +14,8 @@ body {
 
 /* Brand card styles */
 .brand-card {
-  @apply bg-secondary-900/10 backdrop-blur-sm rounded-xl p-6 transition-all duration-300 hover:scale-105 border border-secondary-800;
+  /* Removed semi-white background so logos appear without white box */
+  @apply bg-transparent rounded-xl p-6 transition-all duration-300 hover:scale-105 border border-secondary-800;
 }
 
 .brand-card:hover {
