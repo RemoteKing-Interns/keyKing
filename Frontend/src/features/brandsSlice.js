@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 // Async thunk to fetch brands
 export const fetchBrands = createAsyncThunk("brands/fetchBrands", async () => {
-  const res = await fetch("http://192.168.15.104:3000/api/brands/");
+  const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/brands/`);
   const data = await res.json();
   // normalise to array
   if (Array.isArray(data)) return data;
@@ -18,7 +18,13 @@ const brandsSlice = createSlice({
     status: "idle", // idle | loading | succeeded | failed
     error: null,
   },
-  reducers: {},
+  reducers: {
+    clearBrands: (state) => {
+      state.items = [];
+      state.status = 'idle';
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchBrands.pending, (state) => {
@@ -35,4 +41,5 @@ const brandsSlice = createSlice({
   },
 });
 
+export const { clearBrands } = brandsSlice.actions;
 export default brandsSlice.reducer;

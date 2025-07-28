@@ -5,7 +5,7 @@ export const fetchVariants = createAsyncThunk(
   "variants/fetchVariants",
   async ({ brand, model }) => {
     const res = await fetch(
-      `http://192.168.15.104:3000/api/variants/${encodeURIComponent(
+      `${import.meta.env.VITE_API_BASE_URL}/api/variants/${encodeURIComponent(
         brand
       )}/${encodeURIComponent(model)}`
     );
