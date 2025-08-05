@@ -116,6 +116,12 @@ const VehicleSelection = () => {
     dispatch(clearVariants());
   };
 
+  const handleBackToVariants = () => {
+    console.log("Going back to variants");
+    setSelectedVariant(null); // Only clear variant, keep model selected
+    // Do not clear variants here!
+  };
+
   const handleBackToModels = () => {
     console.log("Going back to models");
     setSelectedModel(null); // Go back to model selection
@@ -185,11 +191,11 @@ const VehicleSelection = () => {
       <main className="px-6 py-10">
         {/* Brand Selection */}
         {!selectedBrand && (
-          <div className="max-w-6xl mx-auto">
+          <div className="w-full px-2 md:px-8 lg:px-16 xl:px-24">
             <h1 className="text-4xl font-bold mb-12 text-center text-black">
               Select Your Vehicle Brand
             </h1>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-8">
               {brands.map((brand) => (
                 <BrandCard
                   key={brand._id}
@@ -205,7 +211,7 @@ const VehicleSelection = () => {
 
         {/* Model Selection */}
         {selectedBrand && !selectedModel && !selectedVariant && (
-          <div className="max-w-6xl mx-auto">
+          <div className="w-full px-2 md:px-8 lg:px-16 xl:px-24">
             <div className="mb-8">
               <button
                 onClick={handleBackToBrands}
@@ -232,7 +238,7 @@ const VehicleSelection = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-8 gap-8">
                 {modelItems.map((model) => {
                   const modelName = model.name || "Unnamed Model";
                   const imageUrl = model.imageUrl
@@ -277,7 +283,7 @@ const VehicleSelection = () => {
 
         {/* Variant Selection */}
         {selectedBrand && selectedModel && !selectedVariant && (
-          <div className="max-w-6xl mx-auto">
+          <div className="w-full px-2 md:px-8 lg:px-16 xl:px-24">
             <div className="mb-8">
               <button
                 onClick={handleBackToModels}
@@ -304,7 +310,7 @@ const VehicleSelection = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-8 gap-8">
                 {variants.map((variant) => (
                   <div
                     key={variant._id}
@@ -408,7 +414,7 @@ const VehicleSelection = () => {
                 emergencyStart: selectedVariant.emergencyStart || "",
                 obdPortLocation: selectedVariant.obdPortLocation || "",
               }}
-              onBack={handleBackToModels}
+              onBack={handleBackToVariants}
             />
           </div>
         )}
