@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { variantData } from "../variantData";
 
 // Helper for badge rendering with color and clickable image functionality
 function renderBrandBadge(brand, color, image = null, onImageClick = null) {
@@ -7,7 +6,11 @@ function renderBrandBadge(brand, color, image = null, onImageClick = null) {
   const badge = (
     <span
       className="inline-flex items-center px-2 py-1 text-xs font-bold rounded-full"
-      style={{ background: color, color: "#fff", cursor: image ? "pointer" : "default" }}
+      style={{
+        background: color,
+        color: "#fff",
+        cursor: image ? "pointer" : "default",
+      }}
       onClick={image && onImageClick ? () => onImageClick(image) : undefined}
       title={image ? `Click to view ${brand} image` : undefined}
     >
@@ -21,135 +24,7 @@ function renderBrandBadge(brand, color, image = null, onImageClick = null) {
   );
 }
 
-// Example programmingRows with models, colors, and images
-const programmingRows = [
-  {
-    feature: "Remote Options",
-    value: ["KD", "XH", "OEM"],
-    models: {
-      KD: ["KD-01", "KD-02"],
-      XH: ["XH-01"],
-      OEM: ["OEM-01", "OEM-02"],
-    },
-    colors: {
-      KD: "#1e40af",
-      XH: "#f59e42",
-      OEM: "#10b981",
-    },
-    images: {
-      KD: { src: "public/images/kd-tool.png", alt: "KD Remote" },
-      // You can add images for XH and OEM here if you want
-      // XH: { src: "public/images/xh-tool.png", alt: "XH Remote" },
-      // OEM: { src: "public/images/OEM-remote.png", alt: "OEM Remote" },
-    },
-  },
-  {
-    feature: "Key Blade Options",
-    value: ["KD"],
-    models: {
-      KD: ["KD-B1"],
-    },
-    colors: {
-      KD: "#1e40af",
-    },
-  },
-  {
-    feature: "Cloning Options",
-    value: ["Not Applicable"],
-    models: {
-      "Not Applicable": [],
-    },
-    colors: {
-      "Not Applicable": "#6b7280",
-    },
-  },
-  {
-    feature: "All Keys Lost",
-    value: ["Autel", "Lonsdor"],
-    models: {
-      Autel: ["Autel-A1"],
-      Lonsdor: ["Lonsdor-L1"],
-    },
-    colors: {
-      Autel: "#f43f5e",
-      Lonsdor: "#6366f1",
-    },
-  },
-  {
-    feature: "Add Spare Key",
-    value: ["Autel", "Lonsdor"],
-    models: {
-      Autel: ["Autel-S1"],
-      Lonsdor: ["Lonsdor-S1"],
-    },
-    colors: {
-      Autel: "#f43f5e",
-      Lonsdor: "#6366f1",
-    },
-  },
-  {
-    feature: "Add Remote",
-    value: ["Autel", "Lonsdor"],
-    models: {
-      Autel: ["Autel-R1"],
-      Lonsdor: ["Lonsdor-R1"],
-    },
-    colors: {
-      Autel: "#f43f5e",
-      Lonsdor: "#6366f1",
-    },
-  },
-  {
-    feature: "Pin Required",
-    value: ["Autel", "Lonsdor"],
-    models: {
-      Autel: ["Autel-P1"],
-      Lonsdor: ["Lonsdor-P1"],
-    },
-    colors: {
-      Autel: "#f43f5e",
-      Lonsdor: "#6366f1",
-    },
-  },
-  {
-    feature: "Pin Reading",
-    value: ["Not Applicable"],
-    models: {
-      "Not Applicable": [],
-    },
-    colors: {
-      "Not Applicable": "#6b7280",
-    },
-  },
-];
-
-// Example pathways data
-const pathways = [
-  {
-    name: "Autel",
-    path: "Alfa Romeo > ALL Remotes > Giulia",
-  },
-  {
-    name: "Xhorse",
-    path: "Alfa Romeo > Giulia > Smart Key",
-  },
-];
-
-// Get all unique brands
-function getAllUniqueBrands(rows) {
-  const set = new Set();
-  rows.forEach((row) => {
-    row.value.forEach((v) => set.add(v));
-  });
-  return Array.from(set);
-}
-
-export default function VariantDetails({
-  model = "Giulia",
-  variant = "2016-2018",
-  data,
-  onBack,
-}) {
+export default function VariantDetails({ model, variant, data, onBack }) {
   const [customerComment, setCustomerComment] = useState("");
   const [comments, setComments] = useState([]);
   const [selectedBrand, setSelectedBrand] = useState("");
@@ -157,21 +32,18 @@ export default function VariantDetails({
   const [isResourcesDropdownOpen, setIsResourcesDropdownOpen] = useState(false);
   const [expandedImage, setExpandedImage] = useState(null);
 
-  // Use data from props if provided, otherwise use variantData
-  const info =
-    data?.vehicleInfo || variantData?.[model]?.[variant]?.vehicleInfo || {};
-  const emergencyStart =
-    data?.emergencyStart ||
-    variantData?.[model]?.[variant]?.emergencyStart ||
-    "There is an emergency key position in the vehicle for starting when the remote battery is flat. The key is inserted near the gear lever and the remote buttons are pressed once when prompted.";
-  const obdPortLocation =
-    data?.obdPortLocation ||
-    variantData?.[model]?.[variant]?.obdPortLocation ||
-    "Under the dashboard, near pedals.";
-  const images = data?.images ||
-    variantData?.[model]?.[variant]?.images || {
-      car: "https://cdn.abacus.ai/images/75623b27-9642-41be-b8d7-74c062b4e41b.png",
-    };
+  // Destructure data from props with default values to prevent errors
+  const {
+    vehicleInfo: info = {},
+    keyBladeProfiles = { KD: {}, JMA: {}, Silica: {} },
+    programmingInfo = {},
+    pathways = [],
+    tools = [],
+    resources = { videos: [] },
+    images = {},
+    emergencyStart = "Not available",
+    obdPortLocation = "Not available",
+  } = data || {};
 
   // Handle comment submission
   const handleAddComment = (e) => {
@@ -182,14 +54,6 @@ export default function VariantDetails({
       setCustomerComment("");
     }
   };
-
-  // Unique brands for dropdown
-  const uniqueBrands = getAllUniqueBrands(programmingRows);
-
-  // Filtered rows: only show rows where value includes selectedBrand
-  const filteredRows = selectedBrand
-    ? programmingRows.filter((row) => row.value.includes(selectedBrand))
-    : programmingRows;
 
   return (
     <div className="w-full min-h-screen py-4 sm:py-6 lg:py-8 px-2 sm:px-4 md:px-6 lg:px-8">
@@ -206,7 +70,7 @@ export default function VariantDetails({
       <div className="max-w-7xl mx-auto">
         {/* Title */}
         <h2 className="text-2xl sm:text-3xl font-bold text-black text-center mb-4 sm:mb-6 px-2">
-          {model} <span className="font-normal">{variant}</span>
+          {variant}
         </h2>
 
         {/* Main Grid Layout */}
@@ -259,11 +123,47 @@ export default function VariantDetails({
                   <b>Key Type:</b> {info.keyType}
                 </div>
                 <div>
-                  <b>Key Blade Profile:</b> {info.silcaKeyProfile}
+                  <b>Key Blade Profile:</b>
                   <ol className="ml-4 sm:ml-7 list-disc text-black mt-1">
-                    <li>KD: <a href="#" className="text-blue-600 underline">ref no</a></li>
-                    <li>JMA: <a href="#" className="text-blue-600 underline">ref no</a></li>
-                    <li>Silica: <a href="#" className="text-blue-600 underline">ref no</a></li>
+                    {keyBladeProfiles.KD?.refNo && (
+                      <li>
+                        KD:{" "}
+                        <a
+                          href={keyBladeProfiles.KD.link}
+                          className="text-blue-600 underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {keyBladeProfiles.KD.refNo}
+                        </a>
+                      </li>
+                    )}
+                    {keyBladeProfiles.JMA?.refNo && (
+                      <li>
+                        JMA:{" "}
+                        <a
+                          href={keyBladeProfiles.JMA.link}
+                          className="text-blue-600 underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {keyBladeProfiles.JMA.refNo}
+                        </a>
+                      </li>
+                    )}
+                    {keyBladeProfiles.Silica?.refNo && (
+                      <li>
+                        Silica:{" "}
+                        <a
+                          href={keyBladeProfiles.Silica.link}
+                          className="text-blue-600 underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {keyBladeProfiles.Silica.refNo}
+                        </a>
+                      </li>
+                    )}
                   </ol>
                 </div>
                 <div>
@@ -325,76 +225,40 @@ export default function VariantDetails({
               <h3 className="font-semibold text-blue-700 mb-3 sm:mb-4 text-lg">
                 Programming Information
               </h3>
-              
-              {/* Filter Dropdown */}
-              <div className="mb-4 flex justify-end">
-                <select
-                  className="border border-gray-300 rounded px-2 py-1 text-black text-sm w-full sm:w-auto max-w-xs"
-                  value={selectedBrand}
-                  onChange={(e) => setSelectedBrand(e.target.value)}
-                >
-                  <option value="">Select Brand</option>
-                  {uniqueBrands.map((val) => (
-                    <option key={val} value={val}>
-                      {val}
-                    </option>
-                  ))}
-                </select>
+              <div className="space-y-3 text-sm">
+                <p>
+                  <b>Method:</b> {programmingInfo.method || "N/A"}
+                </p>
+                <div>
+                  <b>Steps:</b>
+                  <ol className="list-decimal list-inside ml-2 mt-1 space-y-1">
+                    {programmingInfo.steps?.length > 0 ? (
+                      programmingInfo.steps.map((step, i) => (
+                        <li key={i}>{step}</li>
+                      ))
+                    ) : (
+                      <li>No steps available.</li>
+                    )}
+                  </ol>
+                </div>
+                <div>
+                  <b>Required Tools:</b>
+                  <ul className="list-disc list-inside ml-2 mt-1 space-y-1">
+                    {tools?.length > 0 ? (
+                      tools.map((tool, i) => (
+                        <li key={i}>
+                          {tool.name}
+                          {tool.models &&
+                            tool.models.length > 0 &&
+                            ` (${tool.models.join(", ")})`}
+                        </li>
+                      ))
+                    ) : (
+                      <li>No tools listed.</li>
+                    )}
+                  </ul>
+                </div>
               </div>
-
-              {/* Programming Rows */}
-              <div className="space-y-2">
-                {filteredRows.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="flex flex-col sm:flex-row sm:items-center bg-[#f6f8fc] rounded-lg px-3 sm:px-4 py-2"
-                  >
-                    <div className="w-full sm:w-40 lg:w-48 font-medium text-gray-700 text-sm sm:text-base mb-2 sm:mb-0">
-                      {item.feature}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex flex-wrap gap-1 sm:gap-2">
-                        {selectedBrand
-                          ? renderBrandBadge(
-                              selectedBrand,
-                              item.colors[selectedBrand],
-                              item.images?.[selectedBrand],
-                              setExpandedImage
-                            )
-                          : item.value.map((brand) =>
-                              renderBrandBadge(
-                                brand,
-                                item.colors[brand],
-                                item.images?.[brand],
-                                setExpandedImage
-                              )
-                            )}
-                      </div>
-                      {/* Show models if filtered and available */}
-                      {selectedBrand &&
-                        item.models[selectedBrand] &&
-                        item.models[selectedBrand].length > 0 && (
-                          <div className="mt-2 ml-0 sm:ml-2">
-                            <span className="text-xs text-gray-500">
-                              Models:{" "}
-                            </span>
-                            <span className="text-xs font-semibold text-gray-700">
-                              {item.models[selectedBrand].join(", ")}
-                            </span>
-                          </div>
-                        )}
-                    </div>
-                  </div>
-                ))}
-                {filteredRows.length === 0 && (
-                  <div className="text-gray-500 text-center py-4 text-sm">
-                    No features match the selected brand.
-                  </div>
-                )}
-              </div>
-              <p className="font-semibold text-red-500 text-center mt-4 text-sm">
-                <strong>*</strong> Select brand to see supported models
-              </p>
             </div>
 
             {/* Pathways Section */}
@@ -404,7 +268,10 @@ export default function VariantDetails({
               </h3>
               <div className="space-y-2">
                 {pathways.map((p) => (
-                  <div key={p.name} className="flex flex-col sm:flex-row sm:items-center">
+                  <div
+                    key={p.name}
+                    className="flex flex-col sm:flex-row sm:items-center"
+                  >
                     <span className="font-semibold text-gray-700 w-full sm:w-20 mb-1 sm:mb-0">
                       {p.name}:
                     </span>
@@ -419,7 +286,9 @@ export default function VariantDetails({
             {/* Resources Section - Now includes Emergency Start & OBD Port */}
             <div className="order-5 xl:order-3 bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-4 sm:p-6">
               <button
-                onClick={() => setIsResourcesDropdownOpen(!isResourcesDropdownOpen)}
+                onClick={() =>
+                  setIsResourcesDropdownOpen(!isResourcesDropdownOpen)
+                }
                 className="font-semibold text-blue-700 flex items-center gap-1 text-lg w-full justify-between"
               >
                 <span>Resources & Information</span>
@@ -431,7 +300,7 @@ export default function VariantDetails({
                   ▼
                 </span>
               </button>
-              
+
               {isResourcesDropdownOpen && (
                 <div className="mt-4 space-y-6">
                   {/* Emergency Start & OBD Port - Quick Reference */}
@@ -439,7 +308,7 @@ export default function VariantDetails({
                     <h4 className="font-semibold text-yellow-800 mb-3 text-base">
                       🚨 Quick Reference Guide
                     </h4>
-                    
+
                     <div className="space-y-3">
                       <div>
                         <h5 className="font-semibold text-yellow-700 text-sm mb-1">
@@ -449,7 +318,7 @@ export default function VariantDetails({
                           {emergencyStart}
                         </p>
                       </div>
-                      
+
                       <div>
                         <h5 className="font-semibold text-yellow-700 text-sm mb-1">
                           OBD Port Location:
@@ -486,7 +355,10 @@ export default function VariantDetails({
                               e.target.nextSibling.style.display = "block";
                             }}
                           ></iframe>
-                          <div style={{ display: "none" }} className="text-blue-700">
+                          <div
+                            style={{ display: "none" }}
+                            className="text-blue-700"
+                          >
                             <a
                               href="https://youtu.be/towNfsz6QOc"
                               target="_blank"
@@ -517,7 +389,10 @@ export default function VariantDetails({
                               e.target.nextSibling.style.display = "block";
                             }}
                           ></iframe>
-                          <div style={{ display: "none" }} className="text-blue-700">
+                          <div
+                            style={{ display: "none" }}
+                            className="text-blue-700"
+                          >
                             <a
                               href="https://youtu.be/SxPRZEGMqpM"
                               target="_blank"
@@ -648,46 +523,54 @@ export default function VariantDetails({
                     {isTextDropdownOpen && (
                       <div className="mt-2 text-gray-800 text-sm space-y-3 bg-gray-50 p-4 rounded border">
                         <div>
-                          <h6 className="font-semibold text-gray-700 mb-1">🔑 Remote Battery Tips:</h6>
+                          <h6 className="font-semibold text-gray-700 mb-1">
+                            🔑 Remote Battery Tips:
+                          </h6>
                           <p>
                             "Insert the remote near the gear lever and press the
                             button once when prompted. If the vehicle does not
-                            recognize the remote, ensure the battery is not depleted
-                            and try again. In some cases, holding the remote closer
-                            to the start button may help establish a connection.
-                            Always keep a spare battery for the remote in your glove
-                            compartment to avoid unexpected issues during
-                            emergencies or long trips."
+                            recognize the remote, ensure the battery is not
+                            depleted and try again. In some cases, holding the
+                            remote closer to the start button may help establish
+                            a connection. Always keep a spare battery for the
+                            remote in your glove compartment to avoid unexpected
+                            issues during emergencies or long trips."
                           </p>
                         </div>
                         <div>
-                          <h6 className="font-semibold text-gray-700 mb-1">🔌 OBD Connection Guide:</h6>
+                          <h6 className="font-semibold text-gray-700 mb-1">
+                            🔌 OBD Connection Guide:
+                          </h6>
                           <p>
-                            "The OBD port is located under the dashboard, near the
-                            pedals. For easier access, move the driver's seat back
-                            fully and use a flashlight to locate the port. Before
-                            connecting any diagnostic or programming tool, ensure
-                            the ignition is in the ON position but the engine is not
-                            running. Avoid using excessive force when plugging in
-                            the OBD connector, as this may damage the port or the
-                            tool. If you encounter resistance, double-check the
-                            alignment and try again gently."
+                            "The OBD port is located under the dashboard, near
+                            the pedals. For easier access, move the driver's
+                            seat back fully and use a flashlight to locate the
+                            port. Before connecting any diagnostic or
+                            programming tool, ensure the ignition is in the ON
+                            position but the engine is not running. Avoid using
+                            excessive force when plugging in the OBD connector,
+                            as this may damage the port or the tool. If you
+                            encounter resistance, double-check the alignment and
+                            try again gently."
                           </p>
                         </div>
                         <div>
-                          <h6 className="font-semibold text-gray-700 mb-1">🚗 Emergency Start Procedure:</h6>
+                          <h6 className="font-semibold text-gray-700 mb-1">
+                            🚗 Emergency Start Procedure:
+                          </h6>
                           <p>
-                            "For emergency start, ensure the vehicle is in park mode
-                            and the brake pedal is pressed. The emergency key blade
-                            can be found inside the remote housing. To access it,
-                            slide the release button on the back of the remote and
-                            pull out the blade. Insert the blade into the key slot,
-                            usually hidden behind a small cover near the steering
-                            column or gear lever. After starting the vehicle,
-                            remember to return the emergency blade to the remote to
-                            prevent loss. If the vehicle fails to start, consult the
-                            owner's manual or contact roadside assistance for
-                            further instructions."
+                            "For emergency start, ensure the vehicle is in park
+                            mode and the brake pedal is pressed. The emergency
+                            key blade can be found inside the remote housing. To
+                            access it, slide the release button on the back of
+                            the remote and pull out the blade. Insert the blade
+                            into the key slot, usually hidden behind a small
+                            cover near the steering column or gear lever. After
+                            starting the vehicle, remember to return the
+                            emergency blade to the remote to prevent loss. If
+                            the vehicle fails to start, consult the owner's
+                            manual or contact roadside assistance for further
+                            instructions."
                           </p>
                         </div>
                       </div>
@@ -702,7 +585,7 @@ export default function VariantDetails({
               <h3 className="font-semibold text-blue-700 mb-2 text-lg">
                 Comments from Customer
               </h3>
-              
+
               {/* Display comments */}
               <div className="space-y-2 mb-4">
                 {comments.map((comment, idx) => (
@@ -713,11 +596,13 @@ export default function VariantDetails({
                     <span className="inline-block bg-blue-600 text-white text-xs font-bold rounded-full px-2 py-0.5 flex-shrink-0">
                       Customer
                     </span>
-                    <span className="text-gray-800 text-sm break-words">{comment}</span>
+                    <span className="text-gray-800 text-sm break-words">
+                      {comment}
+                    </span>
                   </div>
                 ))}
               </div>
-              
+
               {/* Input box and button */}
               <form
                 className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2"

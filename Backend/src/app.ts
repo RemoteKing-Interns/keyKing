@@ -57,7 +57,10 @@ app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
+const HOST = process.env.HOST || '0.0.0.0';
+app.listen(PORT, HOST, () => {
+    console.log(`Server running on http://${HOST}:${PORT}`);
+    console.log(`Access the API at http://localhost:${PORT}/api`);
+    console.log(`Access from other devices on the network using your machine's IP address (e.g., http://192.168.1.x:${PORT}/api)`);
 });

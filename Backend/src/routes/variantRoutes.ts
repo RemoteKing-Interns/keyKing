@@ -77,6 +77,45 @@ router.post('/', async (req: CreateVariantRequest, res: Response) => {
     }
 });
 
+// Get variants by model ID
+router.get('/model/:modelId', async (req: Request, res: Response) => {
+    try {
+        const { modelId } = req.params;
+        
+        // Validate model ID
+        if (!mongoose.Types.ObjectId.isValid(modelId)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Invalid model ID' 
+            });
+        }
+        
+        // Check if model exists
+        const model = await mongoose.model('Model').findById(modelId);
+        if (!model) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Model not found' 
+            });
+        }
+        
+        // Find all variants for the model
+        const variants = await Variant.find({ modelId });
+        
+        res.json({ 
+            success: true, 
+            data: variants 
+        });
+    } catch (error) {
+        console.error('Error fetching variants by model ID:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error fetching variants',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+});
+
 // Get all variants
 router.get('/', async (req: Request, res: Response) => {
     try {
