@@ -248,10 +248,10 @@ const VehicleSelection = () => {
                   return (
                     <div
                       key={model._id}
-                      className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer transform hover:scale-105 transition-transform duration-200 h-full flex flex-col"
+                      className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer transform hover:scale-105 transition-transform duration-200 w-full max-w-[320px] mx-auto flex flex-col"
                       onClick={() => handleModelClick(model)}
                     >
-                      <div className="h-48 flex items-center justify-center p-4">
+                      <div className="h-32 flex items-center justify-center p-3">
                         <img
                           src={imageUrl}
                           alt={modelName}
@@ -314,10 +314,10 @@ const VehicleSelection = () => {
                 {variants.map((variant) => (
                   <div
                     key={variant._id}
-                    className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer transform hover:scale-105 transition-transform duration-200 h-full flex flex-col"
+                    className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer transform hover:scale-105 transition-transform duration-200 w-full max-w-[320px] mx-auto flex flex-col"
                     onClick={() => handleVariantClick(variant)}
                   >
-                    <div className="h-48 flex items-center justify-center p-4">
+                    <div className="h-32 flex items-center justify-center p-3">
                       {variant.images?.car ? (
                         <img
                           src={variant.images.car}
