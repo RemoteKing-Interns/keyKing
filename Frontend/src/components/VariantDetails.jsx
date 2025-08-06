@@ -32,9 +32,10 @@ export default function VariantDetails({ model, variant, data, onBack }) {
   const [isResourcesDropdownOpen, setIsResourcesDropdownOpen] = useState(false);
   const [expandedImage, setExpandedImage] = useState(null);
 
-  // Destructure data from props with default values to prevent errors
+  // Destructure data from MongoDB structure with default values
   const {
-    vehicleInfo: info = {},
+    name = variant || "Unknown Variant",
+    vehicleInfo = {},
     keyBladeProfiles = { KD: {}, JMA: {}, Silica: {} },
     programmingInfo = {},
     pathways = [],
@@ -45,6 +46,67 @@ export default function VariantDetails({ model, variant, data, onBack }) {
     obdPortLocation = "Not available",
   } = data || {};
 
+  // --- Unique Brands Calculation ---
+  // Collect all unique 'name' values from all arrays in programmingInfo
+  const programmingArrays = [
+    programmingInfo.remoteOptions,
+    programmingInfo.keyBladeOptions,
+    programmingInfo.cloningOptions,
+    programmingInfo.allKeysLost,
+    programmingInfo.addSpareKey,
+    programmingInfo.addRemote,
+    programmingInfo.pinRequired,
+    programmingInfo.pinReading,
+  ];
+  const uniqueBrandsSet = new Set();
+  programmingArrays.forEach((arr) => {
+    if (Array.isArray(arr)) {
+      arr.forEach((item) => {
+        if (item && item.name) uniqueBrandsSet.add(item.name);
+      });
+    }
+  });
+  const uniqueBrands = Array.from(uniqueBrandsSet);
+  const filteredBrands = uniqueBrands.filter((b) => b && b !== "NA");
+  // --- End Unique Brands Calculation ---
+
+  // --- Programming Info Rows Aggregation ---
+  // Each array in programmingInfo is a feature group, e.g. remoteOptions, keyBladeOptions, etc.
+  // We want to show a row per feature (group), with all brands for that group as badges, and filter by selectedBrand if set.
+  const programmingFeatureMap = [
+    { key: "remoteOptions", label: "Remote Programming" },
+    { key: "keyBladeOptions", label: "Key Blade Programming" },
+    { key: "cloningOptions", label: "Cloning" },
+    { key: "allKeysLost", label: "All Keys Lost" },
+    { key: "addSpareKey", label: "Add Spare Key" },
+    { key: "addRemote", label: "Add Remote" },
+    { key: "pinRequired", label: "PIN Required" },
+    { key: "pinReading", label: "PIN Reading" },
+  ];
+
+  const allRows = programmingFeatureMap.map(({ key, label }) => {
+    const arr = programmingInfo[key] || [];
+    // Build value (brands), colors, images, models per brand
+    const value = arr.map((item) => item.name);
+    const colors = {};
+    const images = {};
+    const models = {};
+    arr.forEach((item) => {
+      if (item && item.name) {
+        colors[item.name] = item.Color || "#2563eb";
+        if (item.image) images[item.name] = item.image;
+        if (item.models) models[item.name] = item.models;
+      }
+    });
+    return { feature: label, value, colors, images, models };
+  });
+
+  // Filter rows: if selectedBrand, only include rows where that brand is present
+  const filteredRows = selectedBrand
+    ? allRows.filter((row) => row.value.includes(selectedBrand))
+    : allRows.filter((row) => row.value.length > 0);
+  // --- End Programming Info Rows Aggregation ---
+
   // Handle comment submission
   const handleAddComment = (e) => {
     e.preventDefault();
@@ -53,6 +115,34 @@ export default function VariantDetails({ model, variant, data, onBack }) {
       setComments([trimmed, ...comments]);
       setCustomerComment("");
     }
+  };
+
+  // Format transponder chips for display
+  const formatTransponderChips = () => {
+    if (
+      !vehicleInfo.transponderChip ||
+      !Array.isArray(vehicleInfo.transponderChip)
+    ) {
+      return "Not available";
+    }
+
+    return vehicleInfo.transponderChip.map((chip, idx) => (
+      <React.Fragment key={chip}>
+        {vehicleInfo.transponderChipLinks?.[idx] ? (
+          <a
+            href={vehicleInfo.transponderChipLinks[idx]}
+            className="text-blue-600 underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {chip}
+          </a>
+        ) : (
+          chip
+        )}
+        {idx < vehicleInfo.transponderChip.length - 1 && ", "}
+      </React.Fragment>
+    ));
   };
 
   return (
@@ -71,7 +161,7 @@ export default function VariantDetails({ model, variant, data, onBack }) {
         <div className="max-w-7xl mx-auto">
           {/* Title */}
           <h2 className="text-2xl sm:text-3xl font-bold text-black text-center mb-4 sm:mb-6 px-2">
-            {variant}
+            {name}
           </h2>
 
           {/* Main Grid Layout */}
@@ -80,11 +170,11 @@ export default function VariantDetails({ model, variant, data, onBack }) {
             <div className="flex flex-col gap-4 sm:gap-6">
               {/* Car and Key Images */}
               <div className="order-1 bg-white border-2 border-black rounded-xl shadow p-4 sm:p-6">
-                <div className="ml-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   <img
                     src={images.car || "/images/placeholder-car.png"}
-                    alt={model || "Car"}
-                    className=" w-full sm:w-auto max-w-xs sm:max-w-sm lg:max-w-md object-contain rounded"
+                    alt={vehicleInfo.make + " " + vehicleInfo.model || "Car"}
+                    className="w-full sm:w-auto max-w-xs sm:max-w-sm lg:max-w-md object-contain rounded"
                     style={{ minHeight: 150, maxHeight: 380 }}
                     onError={(e) => {
                       e.target.onerror = null;
@@ -100,109 +190,129 @@ export default function VariantDetails({ model, variant, data, onBack }) {
                   Vehicle Information
                 </h3>
                 <div className="grid grid-cols-1 gap-x-4 sm:gap-x-8 gap-y-2 text-gray-800 text-sm sm:text-base">
-                  <div>
-                    <strong>Country:</strong> {info.country}
-                  </div>
-                  <div>
-                    <strong>Series:</strong> {info.series}
-                  </div>
-                  <div>
-                    <strong>Body:</strong> {info.body}
-                  </div>
-                  <div>
-                    <strong>Engine:</strong> {info.engine}
-                  </div>
-                  <div>
-                    <strong>Drive:</strong> {info.drive}
-                  </div>
-                  <div>
-                    <strong>Date Range:</strong> {info.dateRange}
-                  </div>
-                  <div>
-                    <strong>Key Type:</strong> {info.keyType}
-                  </div>
+                  {vehicleInfo.make && (
+                    <div>
+                      <strong>Make:</strong> {vehicleInfo.make}
+                    </div>
+                  )}
+                  {vehicleInfo.model && (
+                    <div>
+                      <strong>Model:</strong> {vehicleInfo.model}
+                    </div>
+                  )}
+                  {vehicleInfo.series && (
+                    <div>
+                      <strong>Series:</strong> {vehicleInfo.series}
+                    </div>
+                  )}
+                  {vehicleInfo.yearRange && (
+                    <div>
+                      <strong>Year Range:</strong> {vehicleInfo.yearRange}
+                    </div>
+                  )}
+                  {vehicleInfo.keyType && (
+                    <div>
+                      <strong>Key Type:</strong> {vehicleInfo.keyType}
+                    </div>
+                  )}
+
+                  {/* Key Blade Profiles */}
                   <div>
                     <strong>Key Blade Profile:</strong>
                     <ol className="ml-4 sm:ml-7 list-disc text-black mt-1">
-                      {keyBladeProfiles.KD?.refNo && (
-                        <li>
-                          KD:{" "}
-                          <a
-                            href={keyBladeProfiles.KD.link}
-                            className="text-blue-600 underline"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {keyBladeProfiles.KD.refNo}
-                          </a>
-                        </li>
-                      )}
-                      {keyBladeProfiles.JMA?.refNo && (
-                        <li>
-                          JMA:{" "}
-                          <a
-                            href={keyBladeProfiles.JMA.link}
-                            className="text-blue-600 underline"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {keyBladeProfiles.JMA.refNo}
-                          </a>
-                        </li>
-                      )}
-                      {keyBladeProfiles.Silica?.refNo && (
-                        <li>
-                          Silica:{" "}
-                          <a
-                            href={keyBladeProfiles.Silica.link}
-                            className="text-blue-600 underline"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {keyBladeProfiles.Silica.refNo}
-                          </a>
-                        </li>
-                      )}
+                      {keyBladeProfiles.KD?.refNo &&
+                        keyBladeProfiles.KD.refNo !== "NA" && (
+                          <li>
+                            KD:{" "}
+                            <a
+                              href={keyBladeProfiles.KD.link}
+                              className="text-blue-600 underline"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {keyBladeProfiles.KD.refNo}
+                            </a>
+                          </li>
+                        )}
+                      {keyBladeProfiles.JMA?.refNo &&
+                        keyBladeProfiles.JMA.refNo !== "NA" && (
+                          <li>
+                            JMA:{" "}
+                            <a
+                              href={keyBladeProfiles.JMA.link}
+                              className="text-blue-600 underline"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {keyBladeProfiles.JMA.refNo}
+                            </a>
+                          </li>
+                        )}
+                      {keyBladeProfiles.Silica?.refNo &&
+                        keyBladeProfiles.Silica.refNo !== "NA" && (
+                          <li>
+                            Silica:{" "}
+                            <a
+                              href={keyBladeProfiles.Silica.link}
+                              className="text-blue-600 underline"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {keyBladeProfiles.Silica.refNo}
+                            </a>
+                          </li>
+                        )}
                     </ol>
                   </div>
+
+                  {/* Transponder Chip */}
                   <div>
-                    <strong>Transponder Chip:</strong> {info.transponderChip}
+                    <strong>Transponder Chip:</strong>{" "}
+                    {formatTransponderChips()}
                   </div>
-                  <div>
-                    <strong>Remote Frequency:</strong> {info.remoteFrequency}
-                  </div>
-                  <div>
-                    <strong>Remote King Parts:</strong>{" "}
-                    {info.KingParts?.map((part, idx) => (
-                      <React.Fragment key={part}>
-                        <a
-                          href={info.KingPartsLinks?.[idx] || "#"}
-                          className="text-blue-600 underline"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {part}
-                        </a>
-                        {idx < info.KingParts.length - 1 && ", "}
-                      </React.Fragment>
-                    ))}
-                  </div>
-                  <div>
-                    <strong>Lishi:</strong>{" "}
-                    {info.Lishi && (
+
+                  {vehicleInfo.remoteFrequency && (
+                    <div>
+                      <strong>Remote Frequency:</strong>{" "}
+                      {vehicleInfo.remoteFrequency}
+                    </div>
+                  )}
+
+                  {/* Remote King Parts */}
+                  {vehicleInfo.KingParts &&
+                    vehicleInfo.KingParts.length > 0 && (
+                      <div>
+                        <strong>Remote King Parts:</strong>{" "}
+                        {vehicleInfo.KingParts.map((part, idx) => (
+                          <React.Fragment key={part}>
+                            <a
+                              href={vehicleInfo.KingPartsLinks?.[idx] || "#"}
+                              className="text-blue-600 underline"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {part}
+                            </a>
+                            {idx < vehicleInfo.KingParts.length - 1 && ", "}
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    )}
+
+                  {/* Lishi */}
+                  {vehicleInfo.Lishi && (
+                    <div>
+                      <strong>Lishi:</strong>{" "}
                       <a
-                        href={info.LishiLink || "#"}
+                        href={vehicleInfo.LishiLink || "#"}
                         className="text-blue-600 underline"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {info.Lishi}
+                        {vehicleInfo.Lishi}
                       </a>
-                    )}
-                  </div>
-                  <div>
-                    <strong>OBD Location:</strong> {info.obdLocation}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -210,37 +320,77 @@ export default function VariantDetails({ model, variant, data, onBack }) {
             {/* Right Column: Programming Info, Pathways, Resources, Comments */}
             <div className="flex flex-col gap-4 sm:gap-6">
               {/* Programming Information */}
-              <div className="order-3 xl:order-1 bg-[#0f172a1a] border-2 border-black rounded-xl shadow p-4 sm:p-6">
+              <div className="order-3 xl:order-1 bg-white border-2 border-black rounded-xl shadow p-4 sm:p-6">
                 <h3 className="font-semibold text-blue-700 mb-3 sm:mb-4 text-lg">
                   Programming Information
                 </h3>
-
-                {/* Filter Dropdown */}
                 <div className="mb-4 flex justify-end">
-                  {/*
-                  // TODO: Brand filter temporarily disabled due to missing uniqueBrands definition. Fix uniqueBrands calculation before re-enabling.
                   <select
                     className="border border-gray-300 rounded px-2 py-1 text-black text-sm w-full sm:w-auto max-w-xs"
                     value={selectedBrand}
                     onChange={(e) => setSelectedBrand(e.target.value)}
                   >
-                    <option value="">Select Brand</option>
-                    {uniqueBrands.map((val) => (
-                      <option key={val} value={val}>
-                        {val}
+                    <option value="">All Brands</option>
+                    {filteredBrands.map((brand) => (
+                      <option key={brand} value={brand}>
+                        {brand}
                       </option>
                     ))}
                   </select>
-                  */}
                 </div>
-
                 {/* Programming Rows */}
-                {/*
-                  TODO: Programming rows temporarily disabled due to missing filteredRows definition. Fix filteredRows calculation before re-enabling.
-                  Example block:
-                  <div className="space-y-2"> ... </div>
-                  <p className="font-semibold text-red-500 text-center mt-4 text-sm">...</p>
-                */}
+                <div className="space-y-2">
+                  {filteredRows.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="flex flex-col sm:flex-row sm:items-center bg-gray-50 rounded-lg px-3 sm:px-4 py-2"
+                    >
+                      <div className="w-full sm:w-40 lg:w-48 font-semibold text-gray-700 text-sm sm:text-base mb-2 sm:mb-0">
+                        {item.feature}:
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex flex-wrap gap-1 sm:gap-2">
+                          {selectedBrand
+                            ? renderBrandBadge(
+                                selectedBrand,
+                                item.colors[selectedBrand],
+                                item.images?.[selectedBrand],
+                                setExpandedImage
+                              )
+                            : item.value.map((brand) =>
+                                renderBrandBadge(
+                                  brand === "NA" ? "NOT APPLICABLE" : brand,
+                                  item.colors[brand],
+                                  item.images?.[brand],
+                                  setExpandedImage
+                                )
+                              )}
+                        </div>
+                        {/* Show models if filtered and available */}
+                        {selectedBrand &&
+                          item.models[selectedBrand] &&
+                          item.models[selectedBrand].length > 0 && (
+                            <div className="mt-2 ml-0 sm:ml-2">
+                              <span className="text-xs text-gray-500">
+                                Models:{" "}
+                              </span>
+                              <span className="text-xs font-semibold text-gray-700">
+                                {item.models[selectedBrand].join(", ")}
+                              </span>
+                            </div>
+                          )}
+                      </div>
+                    </div>
+                  ))}
+                  {filteredRows.length === 0 && (
+                    <div className="text-gray-500 text-center py-4 text-sm">
+                      No features match the selected brand.
+                    </div>
+                  )}
+                </div>
+                <p className="font-semibold text-red-500 text-center mt-4 text-sm">
+                  <strong>*</strong> Select brand to see supported models
+                </p>
               </div>
 
               {/* Pathways Section */}
@@ -249,23 +399,35 @@ export default function VariantDetails({ model, variant, data, onBack }) {
                   Pathways
                 </h3>
                 <div className="space-y-2">
-                  {pathways.map((p) => (
+                  {pathways.map((p, idx) => (
                     <div
-                      key={p.name}
-                      className="flex flex-col sm:flex-row sm:items-center"
+                      key={idx}
+                      className="flex flex-col sm:flex-row sm:items-center bg-gray-50 rounded p-3"
                     >
-                      <span className="font-semibold text-gray-700 w-full sm:w-20 mb-1 sm:mb-0">
+                      <span className="font-semibold text-gray-700 w-full sm:w-32 mb-1 sm:mb-0">
                         {p.name}:
                       </span>
-                      <span className="ml-0 sm:ml-2 text-sm text-gray-800 break-all sm:break-normal">
-                        {p.path}
-                      </span>
+                      <div className="flex-1">
+                        <span className="ml-0 sm:ml-2 text-sm text-gray-800 break-all sm:break-normal">
+                          {p.path}
+                        </span>
+                        {p.notes && (
+                          <div className="text-xs text-gray-600 mt-1 ml-0 sm:ml-2">
+                            Note: {p.notes}
+                          </div>
+                        )}
+                        {p.version && (
+                          <div className="text-xs text-blue-600 mt-1 ml-0 sm:ml-2">
+                            Version: {p.version}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Resources Section - Now includes Emergency Start & OBD Port */}
+              {/* Resources Section */}
               <div className="order-5 xl:order-3 bg-white border-2 border-black rounded-xl shadow p-4 sm:p-6">
                 <button
                   onClick={() =>
@@ -318,174 +480,87 @@ export default function VariantDetails({ model, variant, data, onBack }) {
                         🎥 Training Videos
                       </h4>
                       <div className="ml-0 sm:ml-4 space-y-3">
-                        <div>
-                          <h5 className="text-sm font-medium text-gray-800 mb-1">
-                            How to Program Car Keys (YouTube)
-                          </h5>
-                          <div className="w-full max-w-sm">
-                            <iframe
-                              width="100%"
-                              height="157"
-                              src="https://www.youtube.com/embed/towNfsz6QOc"
-                              title="How to Program Car Keys"
-                              frameBorder="0"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                              allowFullScreen
-                              className="rounded border w-full max-w-xs sm:max-w-sm"
-                              onError={(e) => {
-                                e.target.style.display = "none";
-                                e.target.nextSibling.style.display = "block";
-                              }}
-                            ></iframe>
-                            <div
-                              style={{ display: "none" }}
-                              className="text-blue-700"
-                            >
-                              <a
-                                href="https://youtu.be/towNfsz6QOc"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="underline"
-                              >
-                                Watch: How to Program Car Keys
-                              </a>
+                        {resources.videos && resources.videos.length > 0 ? (
+                          resources.videos.map((video, idx) => (
+                            <div key={idx}>
+                              <h5 className="text-sm font-medium text-gray-800 mb-1">
+                                {video.title}
+                              </h5>
+                              <div className="w-full max-w-sm">
+                                <iframe
+                                  width="100%"
+                                  height="157"
+                                  src={`https://www.youtube.com/embed/${video.embedId}`}
+                                  title={video.title}
+                                  frameBorder="0"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                  className="rounded border w-full max-w-xs sm:max-w-sm"
+                                ></iframe>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                        <div>
-                          <h5 className="text-sm font-medium text-gray-800 mb-1">
-                            OBD Port Location Guide (YouTube)
-                          </h5>
-                          <div className="w-full max-w-sm">
-                            <iframe
-                              width="100%"
-                              height="157"
-                              src="https://www.youtube.com/embed/SxPRZEGMqpM"
-                              title="OBD Port Location"
-                              frameBorder="0"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                              allowFullScreen
-                              className="rounded border w-full max-w-xs sm:max-w-sm"
-                              onError={(e) => {
-                                e.target.style.display = "none";
-                                e.target.nextSibling.style.display = "block";
-                              }}
-                            ></iframe>
-                            <div
-                              style={{ display: "none" }}
-                              className="text-blue-700"
-                            >
-                              <a
-                                href="https://youtu.be/SxPRZEGMqpM"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="underline"
-                              >
-                                Watch: OBD Port Location Guide
-                              </a>
+                          ))
+                        ) : (
+                          <>
+                            <div>
+                              <h5 className="text-sm font-medium text-gray-800 mb-1">
+                                How to Program Car Keys (YouTube)
+                              </h5>
+                              <div className="w-full max-w-sm">
+                                <iframe
+                                  width="100%"
+                                  height="157"
+                                  src="https://www.youtube.com/embed/towNfsz6QOc"
+                                  title="How to Program Car Keys"
+                                  frameBorder="0"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                  className="rounded border w-full max-w-xs sm:max-w-sm"
+                                ></iframe>
+                              </div>
                             </div>
-                          </div>
-                        </div>
+                            <div>
+                              <h5 className="text-sm font-medium text-gray-800 mb-1">
+                                OBD Port Location Guide (YouTube)
+                              </h5>
+                              <div className="w-full max-w-sm">
+                                <iframe
+                                  width="100%"
+                                  height="157"
+                                  src="https://www.youtube.com/embed/SxPRZEGMqpM"
+                                  title="OBD Port Location"
+                                  frameBorder="0"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                  className="rounded border w-full max-w-xs sm:max-w-sm"
+                                ></iframe>
+                              </div>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
 
-                    {/* Documents */}
-                    <div>
-                      <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                        📄 Documentation & Manuals
-                      </h4>
-                      <ul className="ml-0 sm:ml-4 space-y-2">
-                        <li>
-                          <a
-                            href="https://example.com/giulia-programming-guide.pdf"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 underline text-sm hover:text-blue-800"
-                          >
-                            📋 Giulia Programming Guide
-                          </a>
-                        </li>
-                        <li>
-                          <a
-                            href="https://example.com/giulia-key-specs.docx"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 underline text-sm hover:text-blue-800"
-                          >
-                            📊 Key Specs Document
-                          </a>
-                        </li>
-                        <li>
-                          <div className="text-gray-800 text-sm font-medium mb-1">
-                            🔧 Programming Tool Manuals:
+                    {/* Reference Photos */}
+                    {images.referencePhotos &&
+                      images.referencePhotos.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                            📸 Reference Photos
+                          </h4>
+                          <div className="ml-0 sm:ml-4 flex flex-wrap gap-2">
+                            {images.referencePhotos.map((photo, idx) => (
+                              <img
+                                key={idx}
+                                src={photo.src || photo}
+                                alt={photo.alt || `Reference ${idx + 1}`}
+                                className="rounded border w-20 sm:w-24 cursor-pointer transition-transform duration-200 hover:scale-105 shadow-sm"
+                                onClick={() => setExpandedImage(photo)}
+                              />
+                            ))}
                           </div>
-                          <ul className="ml-4 space-y-1">
-                            <li>
-                              <a
-                                href="http://xdn-product.cdn.lonsdor.com/instructions/K518PRO/9542b9af36571aca5cc1510d031e1f0b.pdf"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 underline text-sm hover:text-blue-800"
-                              >
-                                • Autel Maxim KM100
-                              </a>
-                            </li>
-                            <li>
-                              <a
-                                href="http://xdn-product.cdn.lonsdor.com/instructions/K518PRO/9542b9af36571aca5cc1510d031e1f0b.pdf"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 underline text-sm hover:text-blue-800"
-                              >
-                                • Maxim 1M508S
-                              </a>
-                            </li>
-                            <li>
-                              <a
-                                href="http://xdn-product.cdn.lonsdor.com/instructions/K518PRO/9542b9af36571aca5cc1510d031e1f0b.pdf"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 underline text-sm hover:text-blue-800"
-                              >
-                                • Xhorse VVDI Key Tool
-                              </a>
-                            </li>
-                            <li>
-                              <a
-                                href="http://xdn-product.cdn.lonsdor.com/instructions/K518PRO/9542b9af36571aca5cc1510d031e1f0b.pdf"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 underline text-sm hover:text-blue-800"
-                              >
-                                • Lonsdor K518 Pro
-                              </a>
-                            </li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </div>
-
-                    {/* Photos */}
-                    <div>
-                      <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                        📸 Reference Photos
-                      </h4>
-                      <div className="ml-0 sm:ml-4 flex flex-wrap gap-2">
-                        {[
-                          { src: "public/images/Giulia.png", alt: "Car" },
-                          { src: "public/images/Key1.png", alt: "Remote" },
-                          { src: "public/images/obd.jpg", alt: "OBD Port" },
-                        ].map((img) => (
-                          <img
-                            key={img.alt}
-                            src={img.src}
-                            alt={img.alt}
-                            className="rounded border w-20 sm:w-24 cursor-pointer transition-transform duration-200 hover:scale-105 shadow-sm"
-                            onClick={() => setExpandedImage(img)}
-                          />
-                        ))}
-                      </div>
-                    </div>
+                        </div>
+                      )}
 
                     {/* Additional Information Dropdown */}
                     <div>
@@ -508,18 +583,14 @@ export default function VariantDetails({ model, variant, data, onBack }) {
                         <div className="mt-2 text-gray-800 text-sm space-y-3 bg-gray-50 p-4 rounded border">
                           <div>
                             <h6 className="font-semibold text-gray-700 mb-1">
-                              🔑 Remote Battery Tips:
+                              🔑 Key Programming Tips:
                             </h6>
                             <p>
-                              "Insert the remote near the gear lever and press
-                              the button once when prompted. If the vehicle does
-                              not recognize the remote, ensure the battery is
-                              not depleted and try again. In some cases, holding
-                              the remote closer to the start button may help
-                              establish a connection. Always keep a spare
-                              battery for the remote in your glove compartment
-                              to avoid unexpected issues during emergencies or
-                              long trips."
+                              For BMW vehicles, ensure all existing keys are
+                              present during programming. The vehicle may
+                              require a security code which can be obtained from
+                              the dealer or calculated using specialized
+                              software.
                             </p>
                           </div>
                           <div>
@@ -527,16 +598,8 @@ export default function VariantDetails({ model, variant, data, onBack }) {
                               🔌 OBD Connection Guide:
                             </h6>
                             <p>
-                              "The OBD port is located under the dashboard, near
-                              the pedals. For easier access, move the driver's
-                              seat back fully and use a flashlight to locate the
-                              port. Before connecting any diagnostic or
-                              programming tool, ensure the ignition is in the ON
-                              position but the engine is not running. Avoid
-                              using excessive force when plugging in the OBD
-                              connector, as this may damage the port or the
-                              tool. If you encounter resistance, double-check
-                              the alignment and try again gently."
+                              {obdPortLocation ||
+                                "The OBD port is typically located under the dashboard. Ensure the ignition is ON but engine is not running before connecting diagnostic tools."}
                             </p>
                           </div>
                           <div>
@@ -544,18 +607,8 @@ export default function VariantDetails({ model, variant, data, onBack }) {
                               🚗 Emergency Start Procedure:
                             </h6>
                             <p>
-                              "For emergency start, ensure the vehicle is in
-                              park mode and the brake pedal is pressed. The
-                              emergency key blade can be found inside the remote
-                              housing. To access it, slide the release button on
-                              the back of the remote and pull out the blade.
-                              Insert the blade into the key slot, usually hidden
-                              behind a small cover near the steering column or
-                              gear lever. After starting the vehicle, remember
-                              to return the emergency blade to the remote to
-                              prevent loss. If the vehicle fails to start,
-                              consult the owner's manual or contact roadside
-                              assistance for further instructions."
+                              {emergencyStart ||
+                                "Refer to vehicle manual for emergency start procedures."}
                             </p>
                           </div>
                         </div>
@@ -622,8 +675,8 @@ export default function VariantDetails({ model, variant, data, onBack }) {
             style={{ cursor: "zoom-out" }}
           >
             <img
-              src={expandedImage.src}
-              alt={expandedImage.alt}
+              src={expandedImage.src || expandedImage}
+              alt={expandedImage.alt || "Expanded view"}
               className="max-h-[90vh] max-w-[90vw] rounded-lg shadow-lg border-4 border-white object-contain"
               onClick={(e) => e.stopPropagation()}
             />

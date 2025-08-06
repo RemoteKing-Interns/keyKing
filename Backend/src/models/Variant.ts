@@ -20,33 +20,83 @@ interface IVariant extends Document {
     LishiLink: string;
   };
   keyBladeProfiles: {
-    KD: { refNo: string; link: string };
-    JMA: { refNo: string; link: string };
-    Silica: { refNo: string; link: string };
+    KD?: { refNo: string; link: string };
+    JMA?: { refNo: string; link: string };
+    Silica?: { refNo: string; link: string };
   };
   images: {
     car: string;
-    key: string;
-    referencePhotos: Array<{
+    key?: string;
+    referencePhotos?: Array<{
       src: string;
       alt: string;
       category: string;
     }>;
   };
-  emergencyStart: string;
-  obdPortLocation: string;
-  tools: Array<{
-    name: string;
-    models: string[];
-  }>;
-  programmingInfo: any;
+  programmingInfo: {
+    remoteOptions: Array<{
+      name: string;
+      models: string[];
+      Color: string;
+    }>;
+    keyBladeOptions: Array<{
+      name: string;
+      models: string[];
+      Color: string;
+    }>;
+    cloningOptions: Array<{
+      name: string;
+      models: string[];
+      Color: string;
+    }>;
+    allKeysLost: Array<{
+      name: string;
+      models: string[];
+      Color: string;
+    }>;
+    addSpareKey: Array<{
+      name: string;
+      models: string[];
+      Color: string;
+    }>;
+    addRemote: Array<{
+      name: string;
+      models: string[];
+      Color: string;
+    }>;
+    pinRequired: Array<{
+      name: string;
+      models: string[];
+      Color: string;
+    }>;
+    pinReading: Array<{
+      name: string;
+      models: string[];
+      Color: string;
+    }>;
+  };
   pathways: Array<{
     name: string;
     path: string;
-    version: string;
-    notes: string;
+    version?: string;
+    notes?: string;
   }>;
-  resources: any;
+  emergencyStart: string;
+  obdPortLocation: string;
+  resources: {
+    quickReference: {
+      emergencyStart: string;
+      obdPortLocation: string;
+    };
+    videos: Array<{
+      title: string;
+      embedId: string;
+    }>;
+    documents: Array<{
+      title: string;
+      link: string;
+    }>;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -107,15 +157,64 @@ const variantSchema = new Schema<IVariant>(
         },
       ],
     },
-    emergencyStart: String,
-    obdPortLocation: String,
-    tools: [
-      {
-        name: String,
-        models: [String],
-      },
-    ],
-    programmingInfo: Schema.Types.Mixed,
+    programmingInfo: {
+      remoteOptions: [
+        {
+          name: String,
+          models: [String],
+          Color: String,
+        },
+      ],
+      keyBladeOptions: [
+        {
+          name: String,
+          models: [String],
+          Color: String,
+        },
+      ],
+      cloningOptions: [
+        {
+          name: String,
+          models: [String],
+          Color: String,
+        },
+      ],
+      allKeysLost: [
+        {
+          name: String,
+          models: [String],
+          Color: String,
+        },
+      ],
+      addSpareKey: [
+        {
+          name: String,
+          models: [String],
+          Color: String,
+        },
+      ],
+      addRemote: [
+        {
+          name: String,
+          models: [String],
+          Color: String,
+        },
+      ],
+      pinRequired: [
+        {
+          name: String,
+          models: [String],
+          Color: String,
+        },
+      ],
+      pinReading: [
+        {
+          name: String,
+          models: [String],
+          Color: String,
+        },
+      ],
+    },
     pathways: [
       {
         name: String,
@@ -124,7 +223,26 @@ const variantSchema = new Schema<IVariant>(
         notes: String,
       },
     ],
-    resources: Schema.Types.Mixed,
+    emergencyStart: String,
+    obdPortLocation: String,
+    resources: {
+      quickReference: {
+        emergencyStart: String,
+        obdPortLocation: String,
+      },
+      videos: [
+        {
+          title: String,
+          embedId: String,
+        },
+      ],
+      documents: [
+        {
+          title: String,
+          link: String,
+        },
+      ],
+    },
   },
   {
     timestamps: true,
