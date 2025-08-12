@@ -38,7 +38,6 @@ const VehicleSelection = () => {
   const [selectedModel, setSelectedModel] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
 
-  // Ensure models is always an array
   // Ensure models is always an array and sort it by name
   const modelItems = Array.isArray(models)
     ? [...models].sort((a, b) => a.name.localeCompare(b.name))
@@ -238,7 +237,7 @@ const VehicleSelection = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-8 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-8">
                 {modelItems.map((model) => {
                   const modelName = model.name || "Unnamed Model";
                   const imageUrl = model.imageUrl
@@ -248,7 +247,7 @@ const VehicleSelection = () => {
                   return (
                     <div
                       key={model._id}
-                      className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer transform hover:scale-105 transition-transform duration-200 w-full max-w-[320px] mx-auto flex flex-col"
+                      className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer transform hover:scale-105 transition-transform duration-200 w-full max-w-[360px] mx-auto flex flex-col"
                       onClick={() => handleModelClick(model)}
                     >
                       <div className="h-32 flex items-center justify-center p-3">
@@ -310,11 +309,11 @@ const VehicleSelection = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-8 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-8">
                 {variants.map((variant) => (
                   <div
                     key={variant._id}
-                    className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer transform hover:scale-105 transition-transform duration-200 w-full max-w-[400px] min-w-[260px] mx-auto flex flex-col"
+                    className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer transform hover:scale-105 transition-transform duration-200 w-full max-w-[360px] mx-auto flex flex-col"
                     onClick={() => handleVariantClick(variant)}
                   >
                     <div className="h-32 flex items-center justify-center p-3">
@@ -384,7 +383,6 @@ const VehicleSelection = () => {
                 ...selectedVariant,
                 vehicleInfo: {
                   ...(selectedVariant.vehicleInfo || {}),
-                  // Ensure all required fields have defaults
                   country: selectedVariant.vehicleInfo?.country || "",
                   series: selectedVariant.vehicleInfo?.series || "",
                   body: selectedVariant.vehicleInfo?.body || "",
