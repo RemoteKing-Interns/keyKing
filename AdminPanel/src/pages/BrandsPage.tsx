@@ -44,48 +44,62 @@ const BrandsPage: React.FC = () => {
 
   const handleAddBrand = async (formData: FormData) => {
     try {
-      console.log('Sending form data to server...');
-      
-      // Log FormData entries for debugging
-      console.log('FormData entries in handleAddBrand:');
+      // Extract fields from FormData
+      let name = '';
+      let file: File | null = null;
       for (const [key, value] of formData.entries()) {
-        if (value instanceof File) {
-          console.log(`${key}:`, {
-            name: value.name,
-            type: value.type,
-            size: value.size
-          });
-        } else {
-          console.log(`${key}:`, value);
+        if (key === 'name' && typeof value === 'string') {
+          name = value.trim();
+        }
+        if (key === 'logo' && value instanceof File) {
+          file = value;
         }
       }
 
-      const response = await fetch(`${API_BASE}/api/brands`, {
-        method: 'POST',
-        body: formData, // Let the browser set the Content-Type header with boundary
-        // Don't set Content-Type header here - it will be set automatically with the correct boundary
-      });
-
-      console.log('Response status:', response.status);
-      
-      let result;
-      try {
-        result = await response.json();
-        console.log('Response data:', result);
-      } catch (jsonError) {
-        console.error('Error parsing JSON response:', jsonError);
-        const text = await response.text();
-        console.error('Response text:', text);
-        throw new Error(`Server responded with ${response.status}: ${text}`);
-      }
-      
-      if (!response.ok) {
-        throw new Error(result?.message || `Server error: ${response.status}`);
+      if (!file) {
+        throw new Error('Please select a logo file');
       }
 
-      // Refresh the brands list
-      await fetchBrands();
-      return result;
+      // Read file as data URL to embed in a new tab
+      const toDataUrl = (f: File) =>
+        new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(f);
+        });
+
+      const dataUrl = await toDataUrl(file);
+
+      // Open a new tab showing the brand name and image
+      const win = window.open('', '_blank');
+      if (win) {
+        const safeName = name || '(no name provided)';
+        win.document.write(`<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Brand Preview</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; padding: 24px; }
+      .name { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
+      img { max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 8px; }
+    </style>
+  </head>
+  <body>
+    <div class="name">Brand: ${safeName}</div>
+    <img src="${dataUrl}" alt="Brand Logo" />
+  </body>
+</html>`);
+        win.document.close();
+      } else {
+        throw new Error('Popup blocked. Please allow popups for this site.');
+      }
+
+      // Close modal after preview
+      setShowAddForm(false);
+      return;
     } catch (error) {
       console.error('Error in handleAddBrand:', error);
       throw error;

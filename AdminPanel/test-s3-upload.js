@@ -1,12 +1,8 @@
-import AWS from 'aws-sdk';
-import fs from 'fs';
-import dotenv from 'dotenv';
-import { promisify } from 'util';
-import { v4 as uuidv4 } from 'uuid';
-
-const writeFile = promisify(fs.writeFile);
-const readFile = promisify(fs.readFile);
-const unlink = promisify(fs.unlink);
+const AWS = require('aws-sdk');
+const dotenv = require('dotenv');
+const express = require('express');
+const multer = require('multer');
+const cors = require('cors');
 
 dotenv.config();
 
@@ -32,93 +28,104 @@ const s3 = new AWS.S3({
     region: process.env.AWS_REGION
 });
 
-// Test file path
-const testFilePath = `./test-${uuidv4()}.png`;
-const fileName = `test-upload-${Date.now()}.png`;
+// Simple Express app with HTML form
+const app = express();
+app.use(cors());
 
-async function testS3Upload() {
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 } // 10MB
+});
+
+const htmlPage = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Test S3 Upload</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; padding: 24px; max-width: 720px; margin: 0 auto; }
+      .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; }
+      h1 { margin: 0 0 12px; }
+      label { display:block; margin: 12px 0 6px; font-weight: 600; }
+      input[type="text"], input[type="file"] { width: 100%; }
+      button { background: #2563eb; color: #fff; border: 0; border-radius: 8px; padding: 10px 16px; margin-top: 16px; cursor: pointer; }
+      .note { color: #6b7280; font-size: 14px; }
+      .link { color: #2563eb; text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Upload image to S3</h1>
+      <form action="/upload" method="post" enctype="multipart/form-data">
+        <label for="name">Brand name (optional)</label>
+        <input id="name" name="name" type="text" placeholder="e.g. My Brand" />
+        <label for="logo">Image</label>
+        <input id="logo" name="logo" type="file" accept="image/*" required />
+        <button type="submit">Upload</button>
+      </form>
+      <p class="note">Bucket: ${process.env.AWS_S3_BUCKET} | Region: ${process.env.AWS_REGION}</p>
+    </div>
+  </body>
+</html>`;
+
+app.get('/', (_req, res) => {
+    res.setHeader('Content-Type', 'text/html');
+    res.send(htmlPage);
+});
+
+app.post('/upload', upload.single('logo'), async (req, res) => {
     try {
-        // 1. Create a test image file
-        console.log('🖼️  Creating test image file...');
-        const testImage = Buffer.from(
-            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
-            'base64'
-        );
+        if (!req.file) {
+            return res.status(400).send('No file uploaded. Ensure the field name is "logo".');
+        }
 
-        await writeFile(testFilePath, testImage);
-        console.log(`✅ Created test file: ${testFilePath}`);
-
-        // 2. Read the file
-        console.log('📖 Reading test file...');
-        const data = await readFile(testFilePath);
-
-        // 3. Upload to S3
-        console.log('☁️  Uploading to S3...');
+        const key = `logos/${Date.now()}-${req.file.originalname.replace(/\s+/g, '_')}`;
         const params = {
             Bucket: process.env.AWS_S3_BUCKET,
-            Key: `logos/${fileName}`,
-            Body: data,
-            ContentType: 'image/png',
-            // Removed ACL as the bucket blocks public access
-            // Files will be private by default
+            Key: key,
+            Body: req.file.buffer,
+            ContentType: req.file.mimetype
         };
 
-        console.log('📤 Upload parameters:', {
-            Bucket: params.Bucket,
-            Key: params.Key,
-            ContentType: params.ContentType,
-            'Body size': data.length + ' bytes'
-        });
+        const result = await s3.upload(params).promise();
 
-        const uploadResult = await s3.upload(params).promise();
-        console.log('✅ Successfully uploaded to S3:', uploadResult.Location);
-
-        // 4. Verify the file exists in S3
-        console.log('🔍 Verifying upload...');
-        const headParams = {
-            Bucket: process.env.AWS_S3_BUCKET,
-            Key: `logos/${fileName}`
-        };
-
-        const headResult = await s3.headObject(headParams).promise();
-        console.log('✅ Verified: File exists in S3 with metadata:', {
-            ContentLength: headResult.ContentLength,
-            ContentType: headResult.ContentType,
-            LastModified: headResult.LastModified
-        });
-
-        return uploadResult.Location;
+        res.setHeader('Content-Type', 'text/html');
+        res.send(`<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Uploaded</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; padding: 24px; max-width: 720px; margin: 0 auto; }
+      .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; }
+      .link { color: #2563eb; text-decoration: underline; }
+      img { max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 8px; margin-top: 12px; }
+      .meta { color: #6b7280; font-size: 14px; margin-top: 8px; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Upload complete</h1>
+      <p><strong>Key:</strong> ${result.Key}</p>
+      <p><strong>Bucket:</strong> ${result.Bucket}</p>
+      <p><strong>URL:</strong> <a class="link" href="${result.Location}" target="_blank" rel="noreferrer">${result.Location}</a></p>
+      <div class="meta">Content-Type: ${req.file.mimetype} | Size: ${req.file.size} bytes</div>
+      <p><a class="link" href="/">Upload another</a></p>
+      <img src="data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}" alt="preview" />
+    </div>
+  </body>
+</html>`);
     } catch (error) {
-        console.error('❌ Error during S3 upload test:', {
-            name: error.name,
-            message: error.message,
-            code: error.code,
-            region: process.env.AWS_REGION,
-            bucket: process.env.AWS_S3_BUCKET
-        });
-        throw error;
-    } finally {
-        // Clean up: Delete the test file
-        try {
-            if (fs.existsSync(testFilePath)) {
-                await unlink(testFilePath);
-                console.log('🧹 Cleaned up test file');
-            }
-        } catch (cleanupError) {
-            console.error('⚠️  Error cleaning up test file:', cleanupError);
-        }
+        console.error('❌ Error uploading:', error);
+        res.status(500).send(`Upload failed: ${error.message}`);
     }
-}
+});
 
-// Run the test
-console.log('🚀 Starting S3 upload test...');
-console.log('🌍 AWS Region:', process.env.AWS_REGION);
-console.log('📦 S3 Bucket:', process.env.AWS_S3_BUCKET);
-
-// Add a small delay to ensure all logs are shown
-setTimeout(() => {
-    testS3Upload()
-        .then(url => console.log('✅ Test completed successfully! File URL:', url))
-        .catch(() => process.exit(1))
-        .finally(() => process.exit(0));
-}, 100);
+const PORT = process.env.FORM_PORT || 4000;
+app.listen(PORT, () => {
+    console.log(`🚀 S3 upload form server running at http://localhost:${PORT}`);
+    console.log('🌍 AWS Region:', process.env.AWS_REGION);
+    console.log('📦 S3 Bucket:', process.env.AWS_S3_BUCKET);
+});
