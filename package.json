@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@types/multiparty": "^4.2.1",
+    "aws-sdk": "^2.1692.0",
+    "cors": "^2.8.5",
+    "multer": "^2.0.2",
+    "multer-s3": "^3.0.1",
+    "multiparty": "^4.2.3"
+  }
+}
