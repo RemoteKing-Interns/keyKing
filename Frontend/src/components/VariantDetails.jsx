@@ -55,6 +55,7 @@ export default function VariantDetails({ model, variant, data, onBack }) {
     programmingInfo.allKeysLost,
     programmingInfo.addSpareKey,
     programmingInfo.addRemote,
+    programmingInfo.remoteProgramming,
     programmingInfo.pinRequired,
     programmingInfo.pinReading,
   ];
@@ -74,12 +75,13 @@ export default function VariantDetails({ model, variant, data, onBack }) {
   // Each array in programmingInfo is a feature group, e.g. remoteOptions, keyBladeOptions, etc.
   // We want to show a row per feature (group), with all brands for that group as badges, and filter by selectedBrand if set.
   const programmingFeatureMap = [
-    { key: "remoteOptions", label: "Remote Programming" },
+    { key: "remoteOptions", label: "Remote Options" },
     { key: "keyBladeOptions", label: "Key Blade Options" },
     { key: "cloningOptions", label: "Cloning" },
     { key: "allKeysLost", label: "All Keys Lost" },
     { key: "addSpareKey", label: "Add Spare Key" },
     { key: "addRemote", label: "Add Remote" },
+    { key: "remoteProgramming", label: "Remote Programming" },
     { key: "pinRequired", label: "PIN Required" },
     { key: "pinReading", label: "PIN Reading" },
   ];
