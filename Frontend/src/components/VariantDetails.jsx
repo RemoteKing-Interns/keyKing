@@ -75,7 +75,7 @@ export default function VariantDetails({ model, variant, data, onBack }) {
   // We want to show a row per feature (group), with all brands for that group as badges, and filter by selectedBrand if set.
   const programmingFeatureMap = [
     { key: "remoteOptions", label: "Remote Programming" },
-    { key: "keyBladeOptions", label: "Key Blade Programming" },
+    { key: "keyBladeOptions", label: "Key Blade Options" },
     { key: "cloningOptions", label: "Cloning" },
     { key: "allKeysLost", label: "All Keys Lost" },
     { key: "addSpareKey", label: "Add Spare Key" },
