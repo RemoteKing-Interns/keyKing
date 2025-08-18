@@ -60,46 +60,39 @@ const BrandsPage: React.FC = () => {
         throw new Error('Please select a logo file');
       }
 
-      // Read file as data URL to embed in a new tab
-      const toDataUrl = (f: File) =>
-        new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(f);
-        });
+      // First, upload the logo file to S3
+      const uploadResponse = await fetch(`${API_BASE}/api/upload`, {
+        method: 'POST',
+        body: formData,
+      });
 
-      const dataUrl = await toDataUrl(file);
-
-      // Open a new tab showing the brand name and image
-      const win = window.open('', '_blank');
-      if (win) {
-        const safeName = name || '(no name provided)';
-        win.document.write(`<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Brand Preview</title>
-    <style>
-      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; padding: 24px; }
-      .name { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
-      img { max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 8px; }
-    </style>
-  </head>
-  <body>
-    <div class="name">Brand: ${safeName}</div>
-    <img src="${dataUrl}" alt="Brand Logo" />
-  </body>
-</html>`);
-        win.document.close();
-      } else {
-        throw new Error('Popup blocked. Please allow popups for this site.');
+      if (!uploadResponse.ok) {
+        const error = await uploadResponse.json();
+        throw new Error(error.message || 'Failed to upload logo');
       }
 
-      // Close modal after preview
+      const { fileUrl } = await uploadResponse.json();
+
+      // Then, create the brand with the uploaded logo URL
+      const brandResponse = await fetch(`${API_BASE}/api/brands`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          logoUrl: fileUrl,
+        }),
+      });
+
+      if (!brandResponse.ok) {
+        const error = await brandResponse.json();
+        throw new Error(error.message || 'Failed to create brand');
+      }
+
+      // Refresh the brands list
+      await fetchBrands();
       setShowAddForm(false);
-      return;
     } catch (error) {
       console.error('Error in handleAddBrand:', error);
       throw error;

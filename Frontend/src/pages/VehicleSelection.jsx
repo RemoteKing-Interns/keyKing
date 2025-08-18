@@ -316,7 +316,7 @@ const VehicleSelection = () => {
                     className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer transform hover:scale-105 transition-transform duration-200 w-full max-w-[360px] mx-auto flex flex-col"
                     onClick={() => handleVariantClick(variant)}
                   >
-                    <div className="h-32 flex items-center justify-center p-3">
+                    <div className="h-48 flex items-center justify-center p-6">
                       {variant.images?.car ? (
                         <img
                           src={variant.images.car}
