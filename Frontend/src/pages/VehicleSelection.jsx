@@ -405,6 +405,7 @@ const VehicleSelection = () => {
                     ? selectedVariant.vehicleInfo.KingParts
                     : [],
                   Lishi: selectedVariant.vehicleInfo?.Lishi || "",
+                  LishiLink: selectedVariant.vehicleInfo?.LishiLink || "",
                 },
                 images: {
                   car: selectedVariant.images?.car || "",

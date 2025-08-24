@@ -117,6 +117,34 @@ export default function VariantDetails({ model, variant, data, onBack }) {
     }
   };
 
+  // Format Lishi (supports string or array) with matching links
+  const formatLishi = () => {
+    const label = vehicleInfo.Lishi ?? vehicleInfo.lishi;
+    const link = vehicleInfo.LishiLink ?? vehicleInfo.lishiLink;
+    if (!label) return null;
+
+    const labels = Array.isArray(label) ? label : [label];
+    const links = Array.isArray(link) ? link : [link];
+
+    return labels.map((item, idx) => (
+      <React.Fragment key={`${item}-${idx}`}>
+        {links[idx] ? (
+          <a
+            href={links[idx]}
+            className="text-blue-600 underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {item}
+          </a>
+        ) : (
+          item
+        )}
+        {idx < labels.length - 1 && ", "}
+      </React.Fragment>
+    ));
+  };
+
   // Format transponder chips for display
   const formatTransponderChips = () => {
     if (
@@ -300,17 +328,10 @@ export default function VariantDetails({ model, variant, data, onBack }) {
                     )}
 
                   {/* Lishi */}
-                  {vehicleInfo.Lishi && (
+                  {(vehicleInfo.Lishi || vehicleInfo.lishi) && (
                     <div>
                       <strong>Lishi:</strong>{" "}
-                      <a
-                        href={vehicleInfo.LishiLink || "#"}
-                        className="text-blue-600 underline"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {vehicleInfo.Lishi}
-                      </a>
+                      {formatLishi()}
                     </div>
                   )}
                 </div>
